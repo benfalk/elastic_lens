@@ -1,0 +1,26 @@
+[package]
+name = "elastic_lens"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Ben Falk <benjamin.falk@yahoo.com>"
+]
+
+# See more keys and their definitions at:
+#   https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+thiserror = { version = "1.0" }
+async-trait = { version = "0.1" }
+
+# TODO: make this optional with a version?
+elasticsearch = "7.14.0-alpha.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+
+[[example]]
+name = "fetch_a_document"
+path = "examples/fetch_a_document.rs"
