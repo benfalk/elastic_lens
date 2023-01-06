@@ -1,4 +1,5 @@
 use super::*;
+use serde::Serialize;
 
 /// Every error that can be emmited by an adapter
 #[derive(Debug, thiserror::Error)]
@@ -29,6 +30,10 @@ pub trait ClientAdapter: private::SealedClientAdapter {
 
     /// Fetch a document by id, returns the raw body response
     async fn get_by_id(&self, id: &str) -> Result<String, AdapterError>;
+
+    /// Given a body that can serialize execute a search
+    /// against the configured index and possible doc type
+    async fn search<B: Serialize + Sync>(&self, body: &B) -> Result<String, AdapterError>;
 }
 
 mod private {

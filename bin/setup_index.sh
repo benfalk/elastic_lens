@@ -29,8 +29,8 @@ curl -XPOST -H "Content-Type: application/x-ndjson" http://localhost:9200/_bulk 
 { "category": "clothing", "sub_category": "belt", "active": true, "cost": 1800 }
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "4" } }
 { "category": "clothing", "sub_category": "beanie", "active": false, "cost": 1100 }
-{ "index": { "_index": "inventory", "_type": "_doc", "_id": "4" } }
-{ "category": "office", "sub_category": "pen", "active": true, "cost": 120 }
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "5" } }
+{ "category": "office", "sub_category": "pen", "active": true, "cost": 120 }
+{ "index": { "_index": "inventory", "_type": "_doc", "_id": "6" } }
 { "category": "office", "sub_category": "paper", "active": true, "cost": 500 }
 '

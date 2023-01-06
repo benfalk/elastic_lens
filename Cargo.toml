@@ -24,3 +24,15 @@ tokio = { version = "1", features = ["full"] }
 [[example]]
 name = "fetch_a_document"
 path = "examples/fetch_a_document.rs"
+
+[[example]]
+name = "simple_search"
+path = "examples/simple_search.rs"
+
+# To avoid repeating the same model over and
+# over between examples this serves as a shared
+# lib for them
+[[example]]
+name = "inventory_item"
+path = "examples/inventory_item.rs"
+crate-type = ["lib"]

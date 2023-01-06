@@ -16,9 +16,13 @@ pub use builder::*;
 pub use settings::*;
 
 use serde::de::DeserializeOwned;
+use crate::{request::search::SearchTrait, response::SearchResults};
 
 /// The adapter which is used by default for the ClientBuilder
 pub type DefaultAdapter = offical_client_adapter::ElasticsearchAdapter;
+
+/// Result for the client where the Error is always a ClientError
+pub type ClientResult<T> = std::result::Result<T, ClientError>;
 
 /// Error variants the client can emmit
 #[derive(Debug, thiserror::Error)]
@@ -51,7 +55,7 @@ impl Client<DefaultAdapter> {
 
 impl<T: ClientAdapter> Client<T> {
     /// Fetch a document by ID
-    pub async fn get_by_id<D>(&self, id: &str) -> Result<Option<D>, ClientError>
+    pub async fn get_by_id<D>(&self, id: &str) -> ClientResult<Option<D>>
     where
         D: DeserializeOwned,
     {
@@ -63,6 +67,18 @@ impl<T: ClientAdapter> Client<T> {
                 Ok(single.doc)
             }
             Err(AdapterError::NotFound) => Ok(None),
+            Err(other) => Err(ClientError::Adapter(other)),
+        }
+    }
+
+    /// Execute a Search
+    pub async fn search<D>(&self, search: & impl SearchTrait) -> ClientResult<SearchResults<D>>
+        where
+            D: DeserializeOwned + Clone + std::fmt::Debug
+    {
+        let body = search.search_body();
+        match self.adapter.search(&body).await {
+            Ok(data) => Ok(serde_json::from_str(&data)?),
             Err(other) => Err(ClientError::Adapter(other)),
         }
     }

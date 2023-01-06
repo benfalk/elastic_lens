@@ -1,8 +1,11 @@
+use crate::response;
+
 use super::*;
 use elasticsearch::{
     http::{transport::Transport, Url},
     Elasticsearch,
 };
+use serde::Serialize;
 
 #[derive(Debug)]
 pub struct ElasticsearchAdapter {
@@ -50,6 +53,30 @@ impl ClientAdapter for ElasticsearchAdapter {
         match response.status_code().as_u16() {
             200 => Ok(response.text().await?),
             404 => Err(AdapterError::NotFound),
+            code => Err(AdapterError::Internal(format!(
+                "[{code}]: {}",
+                response.text().await?
+            ))),
+        }
+    }
+
+    async fn search<B: Serialize + Sync>(&self, body: &B) -> Result<String, AdapterError> {
+        use elasticsearch::SearchParts;
+
+        let index = [self.settings.index.as_str()];
+        let mut doc = [""];
+
+        let parts = if let Some(doc_type) = self.settings.doc_type.as_ref() {
+            doc[0] = doc_type.as_str();
+            SearchParts::IndexType(&index, &doc)
+        } else {
+            SearchParts::Index(&index)
+        };
+
+        let response = self.es_client.search(parts).body(body).send().await?;
+
+        match response.status_code().as_u16() {
+            200 => Ok(response.text().await?),
             code => Err(AdapterError::Internal(format!(
                 "[{code}]: {}",
                 response.text().await?
