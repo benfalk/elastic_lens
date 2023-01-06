@@ -196,3 +196,26 @@ fn a_search_with_between_range() {
         })
     );
 }
+
+#[test]
+fn a_search_with_any_of() {
+    let mut search = Search::default();
+    search.field("category").any_of(["clothing", "office"]);
+    search.field("rankings").not().any_of([1, 2, 3]);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "terms": { "category": ["clothing", "office"] } }
+                    ],
+                    "must_not": [
+                        { "terms": { "rankings": [1, 2, 3] } }
+                    ]
+                }
+            }
+        })
+    );
+}

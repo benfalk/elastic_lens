@@ -2,18 +2,54 @@ use super::*;
 use serde::Serialize;
 
 /// This is the underlying data used to represent a term
-/// filter in Elasticsearch.  It is normally wrapped in
+/// or terms filter in Elasticsearch.  It is normally wrapped in
 /// the `Criterion` enum.
 #[derive(Debug, Clone)]
 pub struct TermFilter {
     field: Field,
-    value: ScalarValue,
+    value: ValueType,
+}
+
+#[derive(Debug, Clone)]
+enum ValueType {
+    Single(ScalarValue),
+    Many(Vec<ScalarValue>),
+}
+
+impl ValueType {
+    fn key(&self) -> &'static str {
+        match self {
+            Self::Single(_) => "term",
+            Self::Many(_) => "terms",
+        }
+    }
 }
 
 impl TermFilter {
     /// create a new term filter
-    pub fn new(field: Field, value: ScalarValue) -> Self {
-        Self { field, value }
+    pub fn single<F, V>(field: F, value: V) -> Self
+    where
+        F: Into<Field>,
+        V: Into<ScalarValue>,
+    {
+        Self {
+            field: field.into(),
+            value: ValueType::Single(value.into()),
+        }
+    }
+
+    /// create a term filter for many different values
+    pub fn many<F, V, S>(field: F, values: V) -> Self
+    where
+        F: Into<Field>,
+        S: Into<ScalarValue>,
+        V: IntoIterator<Item = S>,
+    {
+        let values = values.into_iter().map(Into::into).collect();
+        Self {
+            field: field.into(),
+            value: ValueType::Many(values),
+        }
     }
 }
 
@@ -32,13 +68,20 @@ impl Serialize for TermFilter {
     {
         use serde::ser::SerializeMap;
 
-        struct FieldValuePair<'a> {
-            pair: &'a TermFilter,
+        impl Serialize for ValueType {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: serde::Serializer,
+            {
+                match self {
+                    Self::Single(value) => value.serialize(serializer),
+                    Self::Many(values) => values.serialize(serializer),
+                }
+            }
         }
 
-        #[derive(Serialize)]
-        struct Term<'a> {
-            term: FieldValuePair<'a>,
+        struct FieldValuePair<'a> {
+            pair: &'a TermFilter,
         }
 
         impl<'a> Serialize for FieldValuePair<'a> {
@@ -52,10 +95,9 @@ impl Serialize for TermFilter {
             }
         }
 
-        let term = Term {
-            term: FieldValuePair { pair: self },
-        };
-
-        term.serialize(serializer)
+        let pair = FieldValuePair { pair: self };
+        let mut map = serializer.serialize_map(Some(1))?;
+        map.serialize_entry(self.value.key(), &pair)?;
+        map.end()
     }
 }

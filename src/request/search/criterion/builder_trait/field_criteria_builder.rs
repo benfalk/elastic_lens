@@ -36,8 +36,18 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
     /// be one in that case.  You can also think of this as `equals`
     /// for fields that fall into this category.
     pub fn contains<V: Into<ScalarValue>>(self, value: V) {
-        let term_filter = TermFilter::new(self.field, value.into());
+        let term_filter = TermFilter::single(self.field, value);
         T::push(self.builder, term_filter.into());
+    }
+
+    /// Select if any of the provided values are found on the field
+    pub fn any_of<V, S>(self, values: V)
+    where
+        S: Into<ScalarValue>,
+        V: IntoIterator<Item = S>,
+    {
+        let terms = TermFilter::many(self.field, values);
+        T::push(self.builder, terms.into());
     }
 
     /// Select when values are less than value
