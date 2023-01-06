@@ -14,6 +14,7 @@ async fn main() -> Result<(), Error> {
     let mut search = Search::default();
     search.field("category").contains("clothing");
     search.field("sub_category").not().contains("beanie");
+    search.field("cost").between(1000..2000);
     search.set_limit(10);
 
     let results = client.search::<InventoryItem>(&search).await?;

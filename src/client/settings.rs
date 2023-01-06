@@ -6,7 +6,7 @@ pub struct Settings {
     pub(super) host: String,
     pub(super) doc_type: Option<String>,
     pub(super) credentials: Option<Credentials>,
-    pub(super) default_limit: Option<usize>,
+    pub(crate) default_limit: Option<usize>,
 }
 
 /// Represents the username and password which

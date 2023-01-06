@@ -1,5 +1,3 @@
-use crate::response;
-
 use super::*;
 use elasticsearch::{
     http::{transport::Transport, Url},

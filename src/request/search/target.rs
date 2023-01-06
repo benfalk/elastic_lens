@@ -10,5 +10,5 @@ use super::Field;
 #[derive(Debug, Clone)]
 pub enum Target {
     /// when targeting the mapping/field of a document
-    DocField(Field)
+    DocField(Field),
 }

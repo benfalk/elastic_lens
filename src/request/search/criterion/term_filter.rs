@@ -13,10 +13,7 @@ pub struct TermFilter {
 impl TermFilter {
     /// create a new term filter
     pub fn new(field: Field, value: ScalarValue) -> Self {
-        Self {
-            field,
-            value,
-        }
+        Self { field, value }
     }
 }
 

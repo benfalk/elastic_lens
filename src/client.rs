@@ -15,8 +15,8 @@ pub use adapter::*;
 pub use builder::*;
 pub use settings::*;
 
-use serde::de::DeserializeOwned;
 use crate::{request::search::SearchTrait, response::SearchResults};
+use serde::de::DeserializeOwned;
 
 /// The adapter which is used by default for the ClientBuilder
 pub type DefaultAdapter = offical_client_adapter::ElasticsearchAdapter;
@@ -72,11 +72,13 @@ impl<T: ClientAdapter> Client<T> {
     }
 
     /// Execute a Search
-    pub async fn search<D>(&self, search: & impl SearchTrait) -> ClientResult<SearchResults<D>>
-        where
-            D: DeserializeOwned + Clone + std::fmt::Debug
+    pub async fn search<D>(&self, search: &impl SearchTrait) -> ClientResult<SearchResults<D>>
+    where
+        D: DeserializeOwned + Clone + std::fmt::Debug,
     {
-        let body = search.search_body();
+        let mut body = search.search_body();
+        body.apply_defaults(&self.settings);
+
         match self.adapter.search(&body).await {
             Ok(data) => Ok(serde_json::from_str(&data)?),
             Err(other) => Err(ClientError::Adapter(other)),

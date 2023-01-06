@@ -5,8 +5,6 @@ use serde::Deserialize;
 /// be deserialized.
 #[derive(Debug, Deserialize)]
 pub(crate) struct SingleDocument<T> {
-    pub(crate) found: bool,
-
     #[serde(rename = "_source")]
     pub(crate) doc: Option<T>,
 }

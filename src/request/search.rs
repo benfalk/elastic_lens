@@ -43,11 +43,11 @@ impl Search {
 
 impl SearchTrait for Search {
     fn limit(&self) -> Option<usize> {
-        self.limit.clone()
+        self.limit
     }
 
     fn offset(&self) -> Option<usize> {
-        self.offset.clone()
+        self.offset
     }
 
     fn positive_criteria(&self) -> Option<&Vec<Criterion>> {

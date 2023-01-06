@@ -2,9 +2,11 @@ use super::*;
 use serde::Serialize;
 
 mod builder_trait;
+mod range_filter;
 mod term_filter;
 
 pub use builder_trait::*;
+pub use range_filter::*;
 pub use term_filter::*;
 
 /// Conditions for a Search
@@ -19,6 +21,9 @@ pub use term_filter::*;
 pub enum Criterion {
     /// at least one value from the target is found
     Contains(TermFilter),
+
+    /// selects by a range
+    Range(RangeFilter),
 }
 
 impl Serialize for Criterion {
@@ -28,6 +33,7 @@ impl Serialize for Criterion {
     {
         match self {
             Self::Contains(termfilter) => termfilter.serialize(serializer),
+            Self::Range(range) => range.serialize(serializer),
         }
     }
 }
@@ -45,4 +51,5 @@ mod private {
     pub trait SealedCriterion: Sized + Serialize + Into<Criterion> {}
 
     impl SealedCriterion for TermFilter {}
+    impl SealedCriterion for RangeFilter {}
 }

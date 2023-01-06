@@ -2,14 +2,15 @@ use elastic_lens::prelude::*;
 use elastic_lens::request::search::SearchTrait;
 use serde_json::json;
 
+fn search_to_json(search: Search) -> serde_json::Value {
+    serde_json::to_value(search.search_body()).unwrap()
+}
+
 #[test]
 fn a_default_search_is_empty() {
     let search = Search::default();
 
-    assert_eq!(
-        json!({}),
-        serde_json::to_value(search.search_body()).unwrap()
-    );
+    assert_eq!(json!({}), search_to_json(search));
 }
 
 #[test]
@@ -21,7 +22,7 @@ fn a_search_with_a_limit() {
         json!({
             "size": 42
         }),
-        serde_json::to_value(search.search_body()).unwrap()
+        search_to_json(search)
     );
 }
 
@@ -36,7 +37,7 @@ fn a_search_with_a_limit_and_offset() {
             "size": 42,
             "from": 13,
         }),
-        serde_json::to_value(search.search_body()).unwrap()
+        search_to_json(search)
     );
 }
 
@@ -46,7 +47,7 @@ fn a_search_with_a_positive_contains() {
     search.field("foo").contains("bar");
 
     assert_eq!(
-        serde_json::to_value(search.search_body()).unwrap(),
+        search_to_json(search),
         json!({
             "query": {
                 "bool": {
@@ -65,7 +66,7 @@ fn a_search_with_a_negative_contains() {
     search.field("foo").not().contains("bar");
 
     assert_eq!(
-        serde_json::to_value(search.search_body()).unwrap(),
+        search_to_json(search),
         json!({
             "query": {
                 "bool": {
@@ -85,7 +86,7 @@ fn a_search_with_both_negative_and_positive_contains() {
     search.field("foo").contains("biz");
 
     assert_eq!(
-        serde_json::to_value(search.search_body()).unwrap(),
+        search_to_json(search),
         json!({
             "query": {
                 "bool": {
@@ -94,6 +95,101 @@ fn a_search_with_both_negative_and_positive_contains() {
                     ],
                     "must_not": [
                         { "term": { "foo": "bar" } }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_less_than_range() {
+    let mut search = Search::default();
+    search.field("cost").less_than(800);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "range": { "cost": { "lt": 800 } } }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_less_than_or_equal_range() {
+    let mut search = Search::default();
+    search.field("cost").less_than_or_equal(800);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "range": { "cost": { "lte": 800 } } }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_greater_than_range() {
+    let mut search = Search::default();
+    search.field("cost").greater_than(800);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "range": { "cost": { "gt": 800 } } }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_greater_than_or_equal_range() {
+    let mut search = Search::default();
+    search.field("cost").greater_than_or_equal(800);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "range": { "cost": { "gte": 800 } } }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_between_range() {
+    let mut search = Search::default();
+    search.field("cost").between(200..350);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "range": { "cost": { "gte": 200, "lte": 350 } } }
                     ]
                 }
             }

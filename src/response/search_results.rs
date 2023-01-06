@@ -1,8 +1,8 @@
-use std::time::Duration;
 use serde::de::{self, Deserializer, MapAccess, Visitor};
+use serde::Deserialize;
 use std::fmt;
 use std::marker::PhantomData;
-use serde::Deserialize;
+use std::time::Duration;
 
 /// The data that comes back from an Elasticsearch search
 #[derive(Debug, Clone)]
@@ -15,7 +15,7 @@ pub struct SearchResults<T> {
     hits: Vec<DocumentHit<T>>,
 }
 
-impl <T> SearchResults<T> {
+impl<T> SearchResults<T> {
     /// how long did the search take for the cluster
     pub fn search_time(&self) -> Duration {
         self.search_time
