@@ -219,3 +219,26 @@ fn a_search_with_any_of() {
         })
     );
 }
+
+#[test]
+fn a_search_with_exists() {
+    let mut search = Search::default();
+    search.field("user.hobbies").exists();
+    search.field("user.dislikes").not().exists();
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "exists": { "field": "user.hobbies" } }
+                    ],
+                    "must_not": [
+                        { "exists": { "field": "user.dislikes" } }
+                    ]
+                }
+            }
+        })
+    );
+}

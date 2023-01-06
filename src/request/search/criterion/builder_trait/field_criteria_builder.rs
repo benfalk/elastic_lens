@@ -37,7 +37,7 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
     /// for fields that fall into this category.
     pub fn contains<V: Into<ScalarValue>>(self, value: V) {
         let term_filter = TermFilter::single(self.field, value);
-        T::push(self.builder, term_filter.into());
+        T::push(self.builder, term_filter);
     }
 
     /// Select if any of the provided values are found on the field
@@ -47,13 +47,19 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
         V: IntoIterator<Item = S>,
     {
         let terms = TermFilter::many(self.field, values);
-        T::push(self.builder, terms.into());
+        T::push(self.builder, terms);
+    }
+
+    /// Selects if the field has any values
+    pub fn exists(self) {
+        let exists = ExistsFilter::new(self.field);
+        T::push(self.builder, exists)
     }
 
     /// Select when values are less than value
     pub fn less_than<V: Into<ScalarValue>>(self, value: V) {
         let range = RangeFilterBuilder::new(self.field).less_than(value).build();
-        T::push(self.builder, range.into())
+        T::push(self.builder, range)
     }
 
     /// Select when values are less than OR equal to value
@@ -61,7 +67,7 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
         let range = RangeFilterBuilder::new(self.field)
             .less_than_or_equal(value)
             .build();
-        T::push(self.builder, range.into())
+        T::push(self.builder, range)
     }
 
     /// Select when values are greater than value
@@ -69,7 +75,7 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
         let range = RangeFilterBuilder::new(self.field)
             .greater_than(value)
             .build();
-        T::push(self.builder, range.into())
+        T::push(self.builder, range)
     }
 
     /// Select when values are greater than OR equal to value
@@ -77,7 +83,7 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
         let range = RangeFilterBuilder::new(self.field)
             .greater_than_or_equal(value)
             .build();
-        T::push(self.builder, range.into())
+        T::push(self.builder, range)
     }
 
     /// Select when values are between the range inclusively
@@ -86,7 +92,7 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
         V: PartialOrd + Into<ScalarValue>,
     {
         let range = RangeFilterBuilder::new(self.field).between(value).build();
-        T::push(self.builder, range.into())
+        T::push(self.builder, range)
     }
 }
 

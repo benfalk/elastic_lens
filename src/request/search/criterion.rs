@@ -2,10 +2,12 @@ use super::*;
 use serde::Serialize;
 
 mod builder_trait;
+mod exists_filter;
 mod range_filter;
 mod term_filter;
 
 pub use builder_trait::*;
+pub use exists_filter::*;
 pub use range_filter::*;
 pub use term_filter::*;
 
@@ -19,11 +21,14 @@ pub use term_filter::*;
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub enum Criterion {
-    /// at least one value from the target is found
+    /// at least one value from the target is found on the field
     Contains(TermFilter),
 
-    /// selects by a range
+    /// selects by a range for a field
     Range(RangeFilter),
+
+    /// if the document has any value for the field
+    Exists(ExistsFilter),
 }
 
 impl Serialize for Criterion {
@@ -32,8 +37,9 @@ impl Serialize for Criterion {
         S: serde::Serializer,
     {
         match self {
-            Self::Contains(termfilter) => termfilter.serialize(serializer),
-            Self::Range(range) => range.serialize(serializer),
+            Self::Contains(filter) => filter.serialize(serializer),
+            Self::Range(filter) => filter.serialize(serializer),
+            Self::Exists(filter) => filter.serialize(serializer),
         }
     }
 }
@@ -52,4 +58,5 @@ mod private {
 
     impl SealedCriterion for TermFilter {}
     impl SealedCriterion for RangeFilter {}
+    impl SealedCriterion for ExistsFilter {}
 }

@@ -3,7 +3,10 @@ use super::*;
 /// ZST trait tag to decide where criteria are placed for a builder
 pub trait BucketPlacer {
     /// place the criterion where it makes sense to
-    fn push(builder: &mut impl CriteriaBuilder, criterion: Criterion);
+    fn push<C, B>(builder: &mut B, criterion: C)
+    where
+        C: Into<Criterion>,
+        B: CriteriaBuilder;
 }
 
 /// ZST struct which will place criteria into the positive
@@ -13,8 +16,12 @@ pub trait BucketPlacer {
 pub struct PositiveBucket {}
 
 impl BucketPlacer for PositiveBucket {
-    fn push(builder: &mut impl CriteriaBuilder, criterion: Criterion) {
-        builder.positive_criteria_mut().push(criterion);
+    fn push<C, B>(builder: &mut B, criterion: C)
+    where
+        C: Into<Criterion>,
+        B: CriteriaBuilder,
+    {
+        builder.positive_criteria_mut().push(criterion.into());
     }
 }
 
@@ -23,7 +30,11 @@ impl BucketPlacer for PositiveBucket {
 pub struct NegativeBucket {}
 
 impl BucketPlacer for NegativeBucket {
-    fn push(builder: &mut impl CriteriaBuilder, criterion: Criterion) {
-        builder.negative_criteria_mut().push(criterion);
+    fn push<C, B>(builder: &mut B, criterion: C)
+    where
+        C: Into<Criterion>,
+        B: CriteriaBuilder,
+    {
+        builder.negative_criteria_mut().push(criterion.into());
     }
 }
