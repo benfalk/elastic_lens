@@ -242,3 +242,70 @@ fn a_search_with_exists() {
         })
     );
 }
+
+#[test]
+fn a_search_with_geo_distance_in_miles() {
+    use elastic_lens::request::search::GeoPoint;
+
+    let mut search = Search::default();
+    search
+        .field("user.address.geo-point")
+        .within(50)
+        .miles()
+        .of(GeoPoint::new(1.1, 2.2));
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "geo_distance": {
+                                "distance": "50mi",
+                                "user.address.geo-point": {
+                                    "lat": 1.1,
+                                    "lon": 2.2,
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_geo_distance_in_kilometers_in_not() {
+    use elastic_lens::request::search::GeoPoint;
+
+    let mut search = Search::default();
+    search
+        .field("user.address.geo-point")
+        .not()
+        .within(50)
+        .kilomenters()
+        .of(GeoPoint::new(1.1, 2.2));
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "must_not": [
+                        {
+                            "geo_distance": {
+                                "distance": "50km",
+                                "user.address.geo-point": {
+                                    "lat": 1.1,
+                                    "lon": 2.2,
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}

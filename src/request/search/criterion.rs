@@ -3,11 +3,13 @@ use serde::Serialize;
 
 mod builder_trait;
 mod exists_filter;
+mod geo_filter;
 mod range_filter;
 mod term_filter;
 
 pub use builder_trait::*;
 pub use exists_filter::*;
+pub use geo_filter::*;
 pub use range_filter::*;
 pub use term_filter::*;
 
@@ -29,6 +31,9 @@ pub enum Criterion {
 
     /// if the document has any value for the field
     Exists(ExistsFilter),
+
+    /// if the field is withing the distance of provided point/distance
+    GeoDistance(GeoDistanceFilter),
 }
 
 impl Serialize for Criterion {
@@ -40,6 +45,7 @@ impl Serialize for Criterion {
             Self::Contains(filter) => filter.serialize(serializer),
             Self::Range(filter) => filter.serialize(serializer),
             Self::Exists(filter) => filter.serialize(serializer),
+            Self::GeoDistance(filter) => filter.serialize(serializer),
         }
     }
 }
@@ -59,4 +65,5 @@ mod private {
     impl SealedCriterion for TermFilter {}
     impl SealedCriterion for RangeFilter {}
     impl SealedCriterion for ExistsFilter {}
+    impl SealedCriterion for GeoDistanceFilter {}
 }

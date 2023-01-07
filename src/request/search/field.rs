@@ -6,7 +6,7 @@ use std::borrow::Cow;
 /// This encasulates the mapping/field on the Elasticsearch index
 /// that you want to target for a search or other potential action.
 ///
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Field {
     name: Cow<'static, str>,
 }

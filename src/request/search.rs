@@ -7,6 +7,7 @@
 mod body;
 mod criterion;
 mod field;
+mod geo_values;
 mod numeric_value;
 mod scalar_value;
 mod search_trait;
@@ -15,6 +16,7 @@ mod target;
 pub use body::*;
 pub use criterion::*;
 pub use field::*;
+pub use geo_values::*;
 pub use numeric_value::*;
 pub use scalar_value::*;
 pub use search_trait::*;

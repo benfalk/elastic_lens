@@ -2,6 +2,7 @@ use super::*;
 
 mod buckets;
 mod field_criteria_builder;
+mod geo_distance_builder;
 
 pub use buckets::*;
 pub use field_criteria_builder::*;

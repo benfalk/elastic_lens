@@ -2,6 +2,8 @@ use crate::request::search::*;
 use std::marker::PhantomData;
 use std::ops::Range;
 
+use super::geo_distance_builder::UnitPicker;
+
 /// Field Criteria Builder
 ///
 /// Starts the construction of different criteria which can target
@@ -93,6 +95,17 @@ impl<'a, T: BucketPlacer, B: CriteriaBuilder> FieldCriteriaBuilder<'a, T, B> {
     {
         let range = RangeFilterBuilder::new(self.field).between(value).build();
         T::push(self.builder, range)
+    }
+
+    /// the distance without a unit type applied yet, the next
+    /// segment in this chain is to select a unit of measurement.
+    pub fn within(self, distance: usize) -> UnitPicker<'a, T, B> {
+        UnitPicker {
+            marker: PhantomData,
+            builder: self.builder,
+            field: self.field,
+            amount: distance,
+        }
     }
 }
 
