@@ -380,3 +380,46 @@ fn a_search_with_not_in_if_any_match() {
         })
     );
 }
+
+#[test]
+fn a_search_using_if_all_match_inside_if_any_match() {
+    let mut search = Search::default();
+
+    search.if_any_match(|q| {
+        q.field("user.role").contains("admin");
+
+        q.if_all_match(|a| {
+            a.field("user.banned").not().contains(true);
+            a.field("user.group").any_of(["rust", "fps"]);
+        });
+    });
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "bool": {
+                                "should": [
+                                    { "term": { "user.role": "admin" } },
+                                    {
+                                        "bool": {
+                                            "filter": [
+                                                { "terms": { "user.group": ["rust", "fps"] } }
+                                            ],
+                                            "must_not": [
+                                                { "term": { "user.banned": true } }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}

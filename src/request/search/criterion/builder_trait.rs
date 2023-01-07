@@ -43,4 +43,17 @@ pub trait CriteriaBuilder: Sized {
         func(&mut any_match);
         <Self::Bucket as BucketPlacer>::push(self, any_match);
     }
+
+    /// Creates a grouped set of critera that must
+    /// all match for the selection to match.  This is
+    /// only available from an `AnyMatch` builder.
+    fn if_all_match<F>(&mut self, mut func: F)
+    where
+        F: FnMut(&mut AllMatch),
+        Self::Bucket: OrBucketPlacer,
+    {
+        let mut all_match = AllMatch::default();
+        func(&mut all_match);
+        <Self::Bucket as BucketPlacer>::push(self, all_match);
+    }
 }

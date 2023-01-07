@@ -1,6 +1,7 @@
 use super::*;
 use serde::Serialize;
 
+mod all_match;
 mod any_match;
 mod builder_trait;
 mod exists_filter;
@@ -9,6 +10,7 @@ mod not_all;
 mod range_filter;
 mod term_filter;
 
+pub use all_match::*;
 pub use any_match::*;
 pub use builder_trait::*;
 pub use exists_filter::*;
@@ -44,6 +46,10 @@ pub enum Criterion {
 
     /// matches if none of the criterion are true
     NotAll(NotAll),
+
+    /// selects if all conditions are true, optimized to put
+    /// not conditions together in a similar bucket
+    AllMatch(AllMatch),
 }
 
 impl Serialize for Criterion {
@@ -58,6 +64,7 @@ impl Serialize for Criterion {
             Self::GeoDistance(filter) => filter.serialize(serializer),
             Self::AnyMatch(filters) => filters.serialize(serializer),
             Self::NotAll(filters) => filters.serialize(serializer),
+            Self::AllMatch(filters) => filters.serialize(serializer),
         }
     }
 }
@@ -80,4 +87,5 @@ mod private {
     impl SealedCriterion for GeoDistanceFilter {}
     impl SealedCriterion for AnyMatch {}
     impl SealedCriterion for NotAll {}
+    impl SealedCriterion for AllMatch {}
 }

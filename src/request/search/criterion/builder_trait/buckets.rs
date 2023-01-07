@@ -39,6 +39,11 @@ impl BucketPlacer for NegativeBucket {
     }
 }
 
+/// Tag trait to notifiy that we are in an "if_any_match"
+/// block and that certain functionality is available such
+/// as the `if_all_match` function.
+pub trait OrBucketPlacer: BucketPlacer {}
+
 /// ZST struct which places criteria into a positive
 /// bucket with the expectation that negatives will
 /// be forced also into the positive bucket but jailed
@@ -55,6 +60,8 @@ impl BucketPlacer for GroupedOrBucket {
         builder.positive_criteria_mut().push(criterion.into());
     }
 }
+
+impl OrBucketPlacer for GroupedOrBucket {}
 
 /// This is the tag that lets the builder trait know
 /// it has transitioned from the `GroupedOrBucket`

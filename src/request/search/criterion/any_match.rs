@@ -56,6 +56,6 @@ impl CriteriaBuilder for AnyMatch {
     }
 
     fn negative_criteria_mut(&mut self) -> &mut Vec<Criterion> {
-        unreachable!("should never get pushing to a negative bucket for AnyMatch")
+        unreachable!("should never work with a negative bucket for AnyMatch")
     }
 }
