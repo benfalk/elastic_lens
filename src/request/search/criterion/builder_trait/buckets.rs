@@ -38,3 +38,38 @@ impl BucketPlacer for NegativeBucket {
         builder.negative_criteria_mut().push(criterion.into());
     }
 }
+
+/// ZST struct which places criteria into a positive
+/// bucket with the expectation that negatives will
+/// be forced also into the positive bucket but jailed
+/// separately into their own single NOT node.
+#[derive(Debug, Copy, Clone)]
+pub struct GroupedOrBucket {}
+
+impl BucketPlacer for GroupedOrBucket {
+    fn push<C, B>(builder: &mut B, criterion: C)
+    where
+        C: Into<Criterion>,
+        B: CriteriaBuilder,
+    {
+        builder.positive_criteria_mut().push(criterion.into());
+    }
+}
+
+/// This is the tag that lets the builder trait know
+/// it has transitioned from the `GroupedOrBucket`
+/// to a negative condition and that it needs to be
+/// jailed by itself.
+#[derive(Debug, Copy, Clone)]
+pub struct NegativeGroupedOrBucket {}
+
+impl BucketPlacer for NegativeGroupedOrBucket {
+    fn push<C, B>(builder: &mut B, criterion: C)
+    where
+        C: Into<Criterion>,
+        B: CriteriaBuilder,
+    {
+        let not_all = NotAll::single(criterion);
+        builder.positive_criteria_mut().push(not_all.into());
+    }
+}

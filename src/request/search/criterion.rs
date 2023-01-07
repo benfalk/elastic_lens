@@ -1,15 +1,19 @@
 use super::*;
 use serde::Serialize;
 
+mod any_match;
 mod builder_trait;
 mod exists_filter;
 mod geo_distance_filter;
+mod not_all;
 mod range_filter;
 mod term_filter;
 
+pub use any_match::*;
 pub use builder_trait::*;
 pub use exists_filter::*;
 pub use geo_distance_filter::*;
+pub use not_all::*;
 pub use range_filter::*;
 pub use term_filter::*;
 
@@ -34,6 +38,12 @@ pub enum Criterion {
 
     /// if the field is withing the distance of provided point/distance
     GeoDistance(GeoDistanceFilter),
+
+    /// matches if at least one criterion is true
+    AnyMatch(AnyMatch),
+
+    /// matches if none of the criterion are true
+    NotAll(NotAll),
 }
 
 impl Serialize for Criterion {
@@ -46,6 +56,8 @@ impl Serialize for Criterion {
             Self::Range(filter) => filter.serialize(serializer),
             Self::Exists(filter) => filter.serialize(serializer),
             Self::GeoDistance(filter) => filter.serialize(serializer),
+            Self::AnyMatch(filters) => filters.serialize(serializer),
+            Self::NotAll(filters) => filters.serialize(serializer),
         }
     }
 }
@@ -66,4 +78,6 @@ mod private {
     impl SealedCriterion for RangeFilter {}
     impl SealedCriterion for ExistsFilter {}
     impl SealedCriterion for GeoDistanceFilter {}
+    impl SealedCriterion for AnyMatch {}
+    impl SealedCriterion for NotAll {}
 }

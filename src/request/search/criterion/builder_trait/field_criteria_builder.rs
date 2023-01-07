@@ -120,3 +120,15 @@ impl<'a, B: CriteriaBuilder> FieldCriteriaBuilder<'a, PositiveBucket, B> {
         }
     }
 }
+
+impl<'a, B: CriteriaBuilder> FieldCriteriaBuilder<'a, GroupedOrBucket, B> {
+    /// changes the condition from a selection to an exclusion
+    #[allow(clippy::should_implement_trait)]
+    pub fn not(self) -> FieldCriteriaBuilder<'a, NegativeGroupedOrBucket, B> {
+        FieldCriteriaBuilder {
+            builder: self.builder,
+            field: self.field,
+            marker: PhantomData,
+        }
+    }
+}

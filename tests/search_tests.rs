@@ -309,3 +309,74 @@ fn a_search_with_geo_distance_in_kilometers_in_not() {
         })
     );
 }
+
+#[test]
+fn a_search_with_simple_if_any_match() {
+    let mut search = Search::default();
+
+    search.if_any_match(|critera| {
+        critera.field("user.role").contains("admin");
+        critera.field("user.score").greater_than(9000);
+    });
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "bool": {
+                                "should": [
+                                    { "term": { "user.role": "admin" } },
+                                    { "range": { "user.score": { "gt": 9000 } } }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn a_search_with_not_in_if_any_match() {
+    let mut search = Search::default();
+
+    search.if_any_match(|critera| {
+        critera.field("user.role").contains("admin");
+        critera.field("user.score").greater_than(9000);
+        critera
+            .field("user.hobbies")
+            .not()
+            .any_of(["swimming", "tennis"]);
+    });
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "bool": {
+                                "should": [
+                                    { "term": { "user.role": "admin" } },
+                                    { "range": { "user.score": { "gt": 9000 } } },
+                                    {
+                                        "bool": {
+                                            "must_not": [
+                                                { "terms": { "user.hobbies": ["swimming", "tennis" ] } }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}

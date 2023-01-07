@@ -33,4 +33,14 @@ pub trait CriteriaBuilder: Sized {
     {
         FieldCriteriaBuilder::new(self, field.into())
     }
+
+    /// Selects if any of the created conditions is true
+    fn if_any_match<F>(&mut self, mut func: F)
+    where
+        F: FnMut(&mut AnyMatch),
+    {
+        let mut any_match = AnyMatch::default();
+        func(&mut any_match);
+        <Self::Bucket as BucketPlacer>::push(self, any_match);
+    }
 }
