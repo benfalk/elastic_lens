@@ -14,6 +14,83 @@ real work project.  This is what is driving it's development
 for now; however, if you have suggestions or edits please feel
 free to open an issue :+1:.
 
+## Funtionality Tour
+
+All of these samples can also be found in `examples/sample_code.rs`.
+
+### Creating a Client
+
+```rust
+use elastic_lens::{
+    client::{Client, DefaultAdapter},
+    Error,
+};
+
+pub fn create_client() -> Result<Client<DefaultAdapter>, Error> {
+    Ok(Client::default_builder()
+        .host("http://localhost:9200")
+        .index("sample-index")
+        .credentials("username", "secret")
+        .default_limit(20)
+        .build()?)
+}
+```
+
+### Simple Search
+
+```rust
+// See `examples/inventory_item.rs` for definition
+use super::inventory_item::InventoryItem;
+
+use elastic_lens::{prelude::*, response::SearchResults, Error};
+
+pub async fn clothing_inventory() -> Result<SearchResults<InventoryItem>, Error> {
+    let client = create_client()?;
+
+    let mut search = Search::default();
+    search.field("category").contains("clothing");
+    search.field("cost").greater_than(500);
+
+    Ok(client.search(&search).await?)
+}
+```
+
+### Complex Search
+
+```rust
+use elastic_lens::{prelude::*, request::search::GeoPoint, response::SearchResults, Error};
+use serde_json::Value;
+
+// Getting the documents back as serde JSON
+// The client will deserialize the `_source` to any type
+// that implements for it.  See `examples/inventory_item.rs`
+// for an example.
+pub async fn complex_search() -> Result<SearchResults<Value>, Error> {
+    let client = create_client()?;
+    let mut search = Search::default();
+
+    search
+        .field("server.location")
+        .within(500)
+        .miles()
+        .of(GeoPoint::new(12.2, 18.9));
+
+    search.field("log.level").any_of(["error", "warning"]);
+    search.field("log.trace").exists();
+
+    search.if_any_match(|any| {
+        any.field("service").contains("backend-core");
+
+        any.if_all_match(|all| {
+            all.field("service").contains("frontend-core");
+            all.field("tags").any_of(["market-place", "registration"]);
+        });
+    });
+
+    Ok(client.search(&search).await?)
+}
+```
+
 ## Playing with the Examples
 
 There is a bin scripts under `bin/` to get started.  It does

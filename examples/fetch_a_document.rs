@@ -1,7 +1,7 @@
 mod inventory_item;
 
-use elastic_lens::errors::Error;
 use elastic_lens::prelude::*;
+use elastic_lens::Error;
 use inventory_item::InventoryItem;
 
 #[tokio::main]

@@ -102,8 +102,8 @@ impl<T: ClientAdapter> ClientBuilder<T> {
     /// a limit.  This is a convenience to get a different default result
     /// set count.
     ///
-    pub fn default_limit<L: Into<usize>>(mut self, limit: L) -> Self {
-        self.default_limit = Some(limit.into());
+    pub fn default_limit(mut self, limit: usize) -> Self {
+        self.default_limit = Some(limit);
         self
     }
 

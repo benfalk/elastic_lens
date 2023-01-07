@@ -23,9 +23,11 @@
 )]
 
 pub mod client;
-pub mod errors;
+mod errors;
 pub mod request;
 pub mod response;
+
+pub use errors::*;
 
 /// If you `use elastic_lens::prelude::*` you will bring into
 /// scope most of the functionality needed to get a client

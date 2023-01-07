@@ -37,3 +37,8 @@ path = "examples/simple_search.rs"
 name = "inventory_item"
 path = "examples/inventory_item.rs"
 crate-type = ["lib"]
+
+[[example]]
+name = "sample_code"
+path = "examples/sample_code.rs"
+crate-type = ["lib"]
