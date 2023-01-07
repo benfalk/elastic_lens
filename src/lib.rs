@@ -32,5 +32,5 @@ pub mod response;
 /// setup, create requests, and parse results.
 pub mod prelude {
     pub use crate::client::Client;
-    pub use crate::request::search::{CriteriaBuilder, Search};
+    pub use crate::request::search::{CriteriaBuilder, IntoGeoPoint, Search};
 }

@@ -3,13 +3,13 @@ use serde::Serialize;
 
 mod builder_trait;
 mod exists_filter;
-mod geo_filter;
+mod geo_distance_filter;
 mod range_filter;
 mod term_filter;
 
 pub use builder_trait::*;
 pub use exists_filter::*;
-pub use geo_filter::*;
+pub use geo_distance_filter::*;
 pub use range_filter::*;
 pub use term_filter::*;
 
