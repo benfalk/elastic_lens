@@ -4,6 +4,7 @@
 //! to accomplish that goal.
 //!
 
+mod aggregation;
 mod body;
 mod criterion;
 mod field;
@@ -13,6 +14,7 @@ mod scalar_value;
 mod search_trait;
 mod target;
 
+pub use aggregation::*;
 pub use body::*;
 pub use criterion::*;
 pub use field::*;

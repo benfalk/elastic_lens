@@ -12,3 +12,9 @@ pub enum Target {
     /// when targeting the mapping/field of a document
     DocField(Field),
 }
+
+impl From<Field> for Target {
+    fn from(value: Field) -> Self {
+        Self::DocField(value)
+    }
+}

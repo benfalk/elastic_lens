@@ -23,10 +23,10 @@
 )]
 
 pub mod client;
-mod errors;
 pub mod request;
 pub mod response;
 
+mod errors;
 pub use errors::*;
 
 /// If you `use elastic_lens::prelude::*` you will bring into
