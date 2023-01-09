@@ -3,12 +3,14 @@ use serde::Serialize;
 
 mod builder_trait;
 mod collection;
+mod filter_aggregation;
 mod name;
 mod stats_aggregation;
 mod terms_aggregation;
 
 pub use builder_trait::*;
 pub use collection::*;
+pub use filter_aggregation::*;
 pub use name::*;
 pub use stats_aggregation::*;
 pub use terms_aggregation::*;
@@ -25,6 +27,10 @@ pub enum Aggregation {
     /// Numerical stats for a field:
     ///   min, max, sum, count and avg.
     Stats(StatsAggregation),
+
+    /// A single bucket aggregation that narrows the
+    /// set of documents to those that match a query
+    Filter(FilterAggregation),
 }
 
 impl Serialize for Aggregation {
@@ -35,6 +41,7 @@ impl Serialize for Aggregation {
         match self {
             Self::Terms(agg) => agg.serialize(serializer),
             Self::Stats(agg) => agg.serialize(serializer),
+            Self::Filter(agg) => agg.serialize(serializer),
         }
     }
 }
@@ -52,4 +59,5 @@ mod private {
 
     impl SealedAgg for TermsAggregation {}
     impl SealedAgg for StatsAggregation {}
+    impl SealedAgg for FilterAggregation {}
 }

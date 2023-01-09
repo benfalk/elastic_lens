@@ -1,9 +1,11 @@
 use super::*;
 mod collection;
+mod filter_result;
 mod stats_result;
 mod terms_result;
 
 pub use collection::*;
+pub use filter_result::*;
 pub use stats_result::*;
 pub use terms_result::*;
 
@@ -19,6 +21,9 @@ pub enum AggResult {
     /// collecting stats for a field
     ///    min, max, sum, count and avg
     Stats(Stats),
+
+    /// Results for a filtered aggregation
+    Filtered(Filtered),
 }
 
 impl AggResult {
@@ -27,6 +32,7 @@ impl AggResult {
             Self::NumericTerms(agg) => agg.str_identifier(),
             Self::StringTerms(agg) => agg.str_identifier(),
             Self::Stats(agg) => agg.str_identifier(),
+            Self::Filtered(agg) => agg.str_identifier(),
         }
     }
 }
@@ -68,4 +74,5 @@ mod private {
     impl SealedAggResultData for NumericTerms {}
     impl SealedAggResultData for StringTerms {}
     impl SealedAggResultData for Stats {}
+    impl SealedAggResultData for Filtered {}
 }

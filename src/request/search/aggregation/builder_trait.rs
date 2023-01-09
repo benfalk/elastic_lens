@@ -1,9 +1,11 @@
 use super::*;
 
+mod filter_agg_builder;
 mod stats_builder;
 mod sub_agg_builder_trait;
 mod terms_builder;
 
+pub use filter_agg_builder::*;
 pub use stats_builder::*;
 pub use sub_agg_builder_trait::*;
 pub use terms_builder::*;
@@ -43,6 +45,25 @@ pub struct AggBuilderWithField<'a, B: AggregationBuilder> {
 }
 
 impl<'a, B: AggregationBuilder> AggBuilderWithName<'a, B> {
+    /// Starts construction of a filter aggregation; which is a
+    /// single bucket aggregation that narrows the set of documents
+    /// based on the provided search
+    pub fn filtered_by<F>(self, mut func: F) -> AggBuilderWithSearch<'a, B>
+    where
+        F: FnMut(&mut AllMatch),
+    {
+        let mut search = AllMatch::default();
+
+        func(&mut search);
+
+        AggBuilderWithSearch {
+            name: self.name,
+            search,
+            builder: self.builder,
+            sub_aggs: None,
+        }
+    }
+
     /// targets a field for aggregation
     pub fn for_field<F: Into<Field>>(self, field: F) -> AggBuilderWithField<'a, B> {
         AggBuilderWithField {

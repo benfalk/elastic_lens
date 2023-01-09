@@ -34,6 +34,10 @@ path = "examples/simple_search.rs"
 name = "simple_aggs"
 path = "examples/simple_aggs.rs"
 
+[[example]]
+name = "filter_aggs"
+path = "examples/filter_aggs.rs"
+
 # To avoid repeating the same model over and
 # over between examples this serves as a shared
 # lib for them

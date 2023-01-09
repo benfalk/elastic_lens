@@ -79,6 +79,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
             StringTerms(String),
             NumbericTerms(String),
             Stats(String),
+            Filter(String),
         }
 
         impl<'de> Deserialize<'de> for KeyType {
@@ -99,8 +100,12 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                     where
                         E: de::Error,
                     {
-                        const FIELDS: &[&str] =
-                            &[NumericTerms::ES_KEY, StringTerms::ES_KEY, Stats::ES_KEY];
+                        const FIELDS: &[&str] = &[
+                            NumericTerms::ES_KEY,
+                            StringTerms::ES_KEY,
+                            Stats::ES_KEY,
+                            Filtered::ES_KEY,
+                        ];
 
                         let (agg_type, name) = key
                             .split_once('#')
@@ -110,6 +115,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                             StringTerms::ES_KEY => Ok(KeyType::StringTerms(name.to_owned())),
                             NumericTerms::ES_KEY => Ok(KeyType::NumbericTerms(name.to_owned())),
                             Stats::ES_KEY => Ok(KeyType::Stats(name.to_owned())),
+                            Filtered::ES_KEY => Ok(KeyType::Filter(name.to_owned())),
                             unknown => Err(de::Error::unknown_variant(unknown, FIELDS)),
                         }
                     }
@@ -147,6 +153,10 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                         }
                         KeyType::Stats(name) => {
                             let agg: Stats = map.next_value()?;
+                            results.data.insert(name, agg.into());
+                        }
+                        KeyType::Filter(name) => {
+                            let agg: Filtered = map.next_value()?;
                             results.data.insert(name, agg.into());
                         }
                     }
