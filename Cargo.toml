@@ -30,6 +30,10 @@ path = "examples/fetch_a_document.rs"
 name = "simple_search"
 path = "examples/simple_search.rs"
 
+[[example]]
+name = "simple_aggs"
+path = "examples/simple_aggs.rs"
+
 # To avoid repeating the same model over and
 # over between examples this serves as a shared
 # lib for them

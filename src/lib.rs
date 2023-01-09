@@ -34,5 +34,8 @@ pub use errors::*;
 /// setup, create requests, and parse results.
 pub mod prelude {
     pub use crate::client::Client;
-    pub use crate::request::search::{CriteriaBuilder, IntoGeoPoint, Search};
+    pub use crate::request::search::{
+        AggregationBuilder, CriteriaBuilder, IntoGeoPoint, Search, SubAggregationBuilder,
+    };
+    pub use crate::response::{NumericTerms, StringTerms};
 }

@@ -15,6 +15,7 @@ impl<'a, S: SearchTrait> From<&'a S> for SearchBody<'a> {
                     should: None,
                 },
             },
+            aggs: value.aggregations(),
         }
     }
 }
@@ -39,6 +40,9 @@ pub struct SearchBody<'a> {
 
     #[serde(skip_serializing_if = "SkipNode::not_needed")]
     query: ElasticsearchQuery<'a>,
+
+    #[serde(skip_serializing_if = "SkipNode::not_needed")]
+    aggs: Option<&'a AggCollection>,
 }
 
 #[derive(Debug, Serialize)]

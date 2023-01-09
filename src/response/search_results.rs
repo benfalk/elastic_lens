@@ -4,6 +4,10 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::time::Duration;
 
+mod agg_result;
+
+pub use agg_result::*;
+
 /// The data that comes back from an Elasticsearch search
 #[derive(Debug, Clone)]
 pub struct SearchResults<T> {
@@ -13,6 +17,7 @@ pub struct SearchResults<T> {
     shard_stats: ShardStats,
     max_score: Option<f64>,
     hits: Vec<DocumentHit<T>>,
+    aggs: AggResultCollection,
 }
 
 impl<T> SearchResults<T> {
@@ -49,6 +54,18 @@ impl<T> SearchResults<T> {
     /// convenience iterator over the documents from your current search
     pub fn docs(&self) -> impl Iterator<Item = &T> {
         self.hits.iter().map(|d| &d.doc)
+    }
+
+    /// Read-Only Access to the aggregations in the response
+    pub fn aggs(&self) -> &AggResultCollection {
+        &self.aggs
+    }
+
+    /// Mutable reference to the aggregations, useful if
+    /// you want to take individual aggregations from the
+    /// results because you don't need the rest of the results.
+    pub fn aggs_mut(&mut self) -> &mut AggResultCollection {
+        &mut self.aggs
     }
 }
 
@@ -208,6 +225,7 @@ where
                 let mut shard_stats: Option<ShardStats> = None;
                 let mut timed_out: Option<bool> = None;
                 let mut took: Option<Duration> = None;
+                let mut aggs: Option<AggResultCollection> = None;
 
                 while let Some(key) = map.next_key()? {
                     match key {
@@ -223,6 +241,9 @@ where
                         "_shards" => {
                             shard_stats = Some(map.next_value()?);
                         }
+                        "aggregations" => {
+                            aggs = Some(map.next_value()?);
+                        }
                         unknown => Err(de::Error::unknown_field(unknown, FIELDS))?,
                     }
                 }
@@ -231,6 +252,7 @@ where
                 let took = took.ok_or_else(|| de::Error::missing_field("took"))?;
                 let timed_out = timed_out.ok_or_else(|| de::Error::missing_field("timed_out"))?;
                 let shard_stats = shard_stats.ok_or_else(|| de::Error::missing_field("_shards"))?;
+                let aggs = aggs.ok_or_else(|| de::Error::missing_field("aggregations"))?;
 
                 Ok(SearchResults {
                     search_time: took,
@@ -239,6 +261,7 @@ where
                     timed_out,
                     shard_stats,
                     hits: hits.hits,
+                    aggs,
                 })
             }
         }

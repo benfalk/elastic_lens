@@ -423,3 +423,56 @@ fn a_search_using_if_all_match_inside_if_any_match() {
         })
     );
 }
+
+#[test]
+fn building_a_search_with_term_aggregations() {
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("top-categories")
+        .for_field("category")
+        .count_terms();
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "aggs": {
+                "top-categories": {
+                    "terms": { "field": "category" }
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_term_aggregations_and_sub_aggregations() {
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("top-categories")
+        .for_field("category")
+        .count_terms()
+        .with_sub_aggregations(|aggs| {
+            aggs.create_aggregation("sub-categories")
+                .for_field("sub_category")
+                .count_terms()
+                .for_top(20);
+        });
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "aggs": {
+                "top-categories": {
+                    "terms": { "field": "category" },
+                    "aggs": {
+                        "sub-categories": {
+                            "terms": { "field": "sub_category", "size": 20 }
+                        }
+                    }
+                }
+            }
+        })
+    );
+}

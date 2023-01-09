@@ -29,6 +29,7 @@ pub use target::*;
 pub struct Search {
     positive_criteria: Vec<Criterion>,
     negative_criteria: Vec<Criterion>,
+    aggregations: Option<AggCollection>,
     limit: Option<usize>,
     offset: Option<usize>,
 }
@@ -69,6 +70,10 @@ impl SearchTrait for Search {
             Some(&self.negative_criteria)
         }
     }
+
+    fn aggregations(&self) -> Option<&AggCollection> {
+        self.aggregations.as_ref()
+    }
 }
 
 impl CriteriaBuilder for Search {
@@ -80,5 +85,11 @@ impl CriteriaBuilder for Search {
 
     fn negative_criteria_mut(&mut self) -> &mut Vec<Criterion> {
         &mut self.negative_criteria
+    }
+}
+
+impl AggregationBuilder for Search {
+    fn aggregations_mut(&mut self) -> &mut AggCollection {
+        self.aggregations.get_or_insert_with(AggCollection::default)
     }
 }

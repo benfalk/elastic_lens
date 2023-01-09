@@ -71,7 +71,13 @@ impl ClientAdapter for ElasticsearchAdapter {
             SearchParts::Index(&index)
         };
 
-        let response = self.es_client.search(parts).body(body).send().await?;
+        let response = self
+            .es_client
+            .search(parts)
+            .body(body)
+            .typed_keys(true)
+            .send()
+            .await?;
 
         match response.status_code().as_u16() {
             200 => Ok(response.text().await?),

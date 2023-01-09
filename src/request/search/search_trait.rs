@@ -27,6 +27,11 @@ pub trait SearchTrait: Sized {
         None
     }
 
+    /// any aggregations to request from Elasticsearch
+    fn aggregations(&self) -> Option<&AggCollection> {
+        None
+    }
+
     /// Produces a structure that can be serialized into the body
     /// request for Elasticsearch.  This is a borrow from the trait
     /// and therefore locks modification while the body is around.

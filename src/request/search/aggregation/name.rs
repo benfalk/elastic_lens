@@ -5,7 +5,7 @@ use std::borrow::Cow;
 /// a name so that when the data comes back you can match
 /// each aggregation dimension in the response from the
 /// request you gave it.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Name(Cow<'static, str>);
 
 impl From<&'static str> for Name {

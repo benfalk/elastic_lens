@@ -10,7 +10,7 @@ use serde::Serialize;
 pub struct TermsAggregation {
     field: Field,
     size: Option<u16>,
-    sub_agg: Option<AggCollection>,
+    pub(super) sub_aggs: Option<AggCollection>,
 }
 
 impl TermsAggregation {
@@ -24,7 +24,7 @@ impl TermsAggregation {
         Self {
             field: field.into(),
             size: None,
-            sub_agg: None,
+            sub_aggs: None,
         }
     }
 
@@ -74,7 +74,7 @@ impl Serialize for TermsAggregation {
                 field: &self.field,
                 size: self.size,
             },
-            aggs: &self.sub_agg,
+            aggs: &self.sub_aggs,
         };
 
         agg.serialize(serializer)

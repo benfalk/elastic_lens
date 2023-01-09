@@ -67,3 +67,28 @@ pub mod complex_search {
         Ok(client.search(&search).await?)
     }
 }
+
+pub mod terms_aggregations {
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, Error};
+    use serde_json::Value;
+
+    pub async fn category_aggs_with_sub_categories() -> Result<StringTerms, Error> {
+        let client = create_client()?;
+        let mut search = Search::default();
+
+        search
+            .create_aggregation("categories")
+            .for_field("category")
+            .count_terms()
+            .with_sub_aggregations(|sub| {
+                sub.create_aggregation("sub-categories")
+                    .for_field("sub_category")
+                    .count_terms()
+                    .for_top(20);
+            });
+
+        let mut results = client.search::<Value>(&search).await?;
+        Ok(results.aggs_mut().take("categories")?)
+    }
+}

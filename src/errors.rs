@@ -17,4 +17,9 @@ pub enum Error {
     /// Any errors related to the client
     #[error("Client Error: {0}")]
     Client(#[from] crate::client::ClientError),
+
+    /// Any errors related to bad access of aggregation
+    /// data from the results.
+    #[error("{0}")]
+    AggResultAccess(#[from] crate::response::AggAccessError),
 }
