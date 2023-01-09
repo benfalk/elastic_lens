@@ -252,7 +252,7 @@ where
                 let took = took.ok_or_else(|| de::Error::missing_field("took"))?;
                 let timed_out = timed_out.ok_or_else(|| de::Error::missing_field("timed_out"))?;
                 let shard_stats = shard_stats.ok_or_else(|| de::Error::missing_field("_shards"))?;
-                let aggs = aggs.ok_or_else(|| de::Error::missing_field("aggregations"))?;
+                let aggs = aggs.unwrap_or_else(AggResultCollection::default);
 
                 Ok(SearchResults {
                     search_time: took,

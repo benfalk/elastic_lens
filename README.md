@@ -139,19 +139,18 @@ pub async fn collect_price_stats() -> Result<Stats, Error> {
 
 ## Playing with the Examples
 
-There is a bin scripts under `bin/` to get started.  It does
-expect a wide-open Elasticsearch running locally on the default
-port of 9200.  If you don't have that either modify the scripts
-or setup an instance.
+You'll need Elasticsearch running on port 9200. You can run it dockerized with:
 
-I personally use docker:
-
-```bash
+```
 docker run -it -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.11.2
 ```
+
+Then, run `bin/setup_index.sh` to bootstrap some data that the examples will query against.
 
 The examples are found in the `examples/` directory and can be
 run with cargo: `cargo run --example <name> (..args..)`  Here is
 current list of examples:
 
 - `fetch_a_document`
+- `simple_search`
+- `simple_aggs`
