@@ -1,8 +1,10 @@
 use super::*;
 
+mod stats_builder;
 mod sub_agg_builder_trait;
 mod terms_builder;
 
+pub use stats_builder::*;
 pub use sub_agg_builder_trait::*;
 pub use terms_builder::*;
 
@@ -60,6 +62,18 @@ impl<'a, B: AggregationBuilder> AggBuilderWithField<'a, B> {
             field: self.field,
             size: None,
             sub_aggs: None,
+            builder: self.builder,
+        }
+    }
+
+    /// Collect stats for the given field.  You may
+    /// also apply a value to use when a document is
+    /// missing a value for the field.
+    pub fn collect_stats(self) -> AggStatsBuilder<'a, B> {
+        AggStatsBuilder {
+            name: self.name,
+            field: self.field,
+            missing_value: None,
             builder: self.builder,
         }
     }

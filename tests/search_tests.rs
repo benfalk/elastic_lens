@@ -476,3 +476,46 @@ fn building_a_search_with_term_aggregations_and_sub_aggregations() {
         })
     );
 }
+
+#[test]
+fn building_a_search_with_stats_aggregations() {
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("price-stats")
+        .for_field("item.price")
+        .collect_stats();
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "aggs": {
+                "price-stats": {
+                    "stats": { "field": "item.price" }
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_stats_a_missing_value() {
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("test-score-stats")
+        .for_field("test.score")
+        .collect_stats()
+        .use_for_missing_value(0);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "aggs": {
+                "test-score-stats": {
+                    "stats": { "field": "test.score", "missing": 0 }
+                }
+            }
+        })
+    );
+}

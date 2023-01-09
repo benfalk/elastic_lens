@@ -1,8 +1,10 @@
 use super::*;
 mod collection;
+mod stats_result;
 mod terms_result;
 
 pub use collection::*;
+pub use stats_result::*;
 pub use terms_result::*;
 
 /// A single aggregation result from Elasticsearch
@@ -13,6 +15,10 @@ pub enum AggResult {
 
     /// when the term results are numeric
     NumericTerms(NumericTerms),
+
+    /// collecting stats for a field
+    ///    min, max, sum, count and avg
+    Stats(Stats),
 }
 
 impl AggResult {
@@ -20,6 +26,7 @@ impl AggResult {
         match self {
             Self::NumericTerms(agg) => agg.str_identifier(),
             Self::StringTerms(agg) => agg.str_identifier(),
+            Self::Stats(agg) => agg.str_identifier(),
         }
     }
 }
@@ -60,4 +67,5 @@ mod private {
 
     impl SealedAggResultData for NumericTerms {}
     impl SealedAggResultData for StringTerms {}
+    impl SealedAggResultData for Stats {}
 }

@@ -117,6 +117,26 @@ pub async fn category_aggs_with_sub_categories() -> Result<StringTerms, Error> {
 }
 ```
 
+### Stats Aggregations
+
+```rust
+use elastic_lens::{prelude::*, Error};
+use serde_json::Value;
+
+pub async fn collect_price_stats() -> Result<Stats, Error> {
+    let client = create_client()?;
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("price-stats")
+        .for_field("item.price")
+        .collect_stats();
+
+    let mut results = client.search::<Value>(&search).await?;
+    Ok(results.aggs_mut().take("price-stats")?)
+}
+```
+
 ## Playing with the Examples
 
 There is a bin scripts under `bin/` to get started.  It does

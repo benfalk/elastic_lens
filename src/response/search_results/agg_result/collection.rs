@@ -78,6 +78,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
         enum KeyType {
             StringTerms(String),
             NumbericTerms(String),
+            Stats(String),
         }
 
         impl<'de> Deserialize<'de> for KeyType {
@@ -98,7 +99,8 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                     where
                         E: de::Error,
                     {
-                        const FIELDS: &[&str] = &[NumericTerms::ES_KEY, StringTerms::ES_KEY];
+                        const FIELDS: &[&str] =
+                            &[NumericTerms::ES_KEY, StringTerms::ES_KEY, Stats::ES_KEY];
 
                         let (agg_type, name) = key
                             .split_once('#')
@@ -107,6 +109,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                         match agg_type {
                             StringTerms::ES_KEY => Ok(KeyType::StringTerms(name.to_owned())),
                             NumericTerms::ES_KEY => Ok(KeyType::NumbericTerms(name.to_owned())),
+                            Stats::ES_KEY => Ok(KeyType::Stats(name.to_owned())),
                             unknown => Err(de::Error::unknown_variant(unknown, FIELDS)),
                         }
                     }
@@ -140,6 +143,10 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                         }
                         KeyType::NumbericTerms(name) => {
                             let agg: NumericTerms = map.next_value()?;
+                            results.data.insert(name, agg.into());
+                        }
+                        KeyType::Stats(name) => {
+                            let agg: Stats = map.next_value()?;
                             results.data.insert(name, agg.into());
                         }
                     }

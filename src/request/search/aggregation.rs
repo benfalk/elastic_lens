@@ -4,11 +4,13 @@ use serde::Serialize;
 mod builder_trait;
 mod collection;
 mod name;
+mod stats_aggregation;
 mod terms_aggregation;
 
 pub use builder_trait::*;
 pub use collection::*;
 pub use name::*;
+pub use stats_aggregation::*;
 pub use terms_aggregation::*;
 
 /// Enum to represent ever form of aggregation
@@ -19,6 +21,10 @@ pub enum Aggregation {
     /// A multi-bucket value source based aggregation where
     /// buckets are dynamically built - one per unique value.
     Terms(TermsAggregation),
+
+    /// Numerical stats for a field:
+    ///   min, max, sum, count and avg.
+    Stats(StatsAggregation),
 }
 
 impl Serialize for Aggregation {
@@ -28,6 +34,7 @@ impl Serialize for Aggregation {
     {
         match self {
             Self::Terms(agg) => agg.serialize(serializer),
+            Self::Stats(agg) => agg.serialize(serializer),
         }
     }
 }
@@ -44,4 +51,5 @@ mod private {
     pub trait SealedAgg: Sized + Serialize + Into<Aggregation> {}
 
     impl SealedAgg for TermsAggregation {}
+    impl SealedAgg for StatsAggregation {}
 }

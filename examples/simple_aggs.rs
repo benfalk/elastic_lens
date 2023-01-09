@@ -21,6 +21,10 @@ async fn main() -> Result<(), Error> {
                 .for_field("sub_category")
                 .count_terms()
                 .for_top(20);
+
+            aggs.create_aggregation("cost-stats")
+                .for_field("cost")
+                .collect_stats();
         });
 
     search.set_limit(0);

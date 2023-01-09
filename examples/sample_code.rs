@@ -92,3 +92,22 @@ pub mod terms_aggregations {
         Ok(results.aggs_mut().take("categories")?)
     }
 }
+
+pub mod stats_aggregation {
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, Error};
+    use serde_json::Value;
+
+    pub async fn collect_price_stats() -> Result<Stats, Error> {
+        let client = create_client()?;
+        let mut search = Search::default();
+
+        search
+            .create_aggregation("price-stats")
+            .for_field("item.price")
+            .collect_stats();
+
+        let mut results = client.search::<Value>(&search).await?;
+        Ok(results.aggs_mut().take("price-stats")?)
+    }
+}
