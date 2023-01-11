@@ -14,7 +14,7 @@ real work project.  This is what is driving it's development
 for now; however, if you have suggestions or edits please feel
 free to open an issue :+1:.
 
-## Funtionality Tour
+## Functionality Tour
 
 All of these samples can also be found in `examples/sample_code.rs`.
 
@@ -88,6 +88,41 @@ pub async fn complex_search() -> Result<SearchResults<Value>, Error> {
     });
 
     Ok(client.search(&search).await?)
+}
+```
+
+### MultiSearch
+
+```rust
+use super::inventory_item::InventoryItem;
+use elastic_lens::{prelude::*, Error};
+
+pub async fn report_clothing_and_office() -> Result<(), Error> {
+    let client = create_client()?;
+
+    let mut clothing = Search::default();
+    clothing.field("category").contains("clothing");
+
+    let mut office = Search::default();
+    office.field("category").contains("office");
+
+    let results = client
+        .multi_search::<InventoryItem>(&[clothing, office])
+        .await?;
+
+    println!("Clothing:");
+
+    for doc in results[0].docs() {
+        println!("{doc:?}");
+    }
+
+    println!("\nOffice:");
+
+    for doc in results[1].docs() {
+        println!("{doc:?}");
+    }
+
+    Ok(())
 }
 ```
 

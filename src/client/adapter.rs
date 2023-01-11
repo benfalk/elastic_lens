@@ -1,4 +1,5 @@
 use super::*;
+use crate::request::MultiSearch;
 use serde::Serialize;
 
 /// Every error that can be emmited by an adapter
@@ -34,10 +35,14 @@ pub trait ClientAdapter: private::SealedClientAdapter {
     /// Given a body that can serialize execute a search
     /// against the configured index and possible doc type
     async fn search<B: Serialize + Sync>(&self, body: &B) -> Result<String, AdapterError>;
+
+    /// Performs multiple searches at once
+    async fn multi_search<'a>(&self, mut searches: MultiSearch<'a>)
+        -> Result<String, AdapterError>;
 }
 
 mod private {
-    use crate::client::offical_client_adapter::ElasticsearchAdapter;
+    use crate::client::offical_adapter::ElasticsearchAdapter;
 
     pub trait SealedClientAdapter: Send + Sync + Sized {}
 

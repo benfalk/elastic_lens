@@ -8,18 +8,21 @@
 
 mod adapter;
 mod builder;
-mod offical_client_adapter;
+mod offical_adapter;
 mod settings;
 
 pub use adapter::*;
 pub use builder::*;
 pub use settings::*;
 
-use crate::{request::search::SearchTrait, response::SearchResults};
+use crate::{
+    request::{search::SearchTrait, MultiSearch},
+    response::{MultiResponse, SearchResults},
+};
 use serde::de::DeserializeOwned;
 
 /// The adapter which is used by default for the ClientBuilder
-pub type DefaultAdapter = offical_client_adapter::ElasticsearchAdapter;
+pub type DefaultAdapter = offical_adapter::ElasticsearchAdapter;
 
 /// Result for the client where the Error is always a ClientError
 pub type ClientResult<T> = std::result::Result<T, ClientError>;
@@ -83,5 +86,17 @@ impl<T: ClientAdapter> Client<T> {
             Ok(data) => Ok(serde_json::from_str(&data)?),
             Err(other) => Err(ClientError::Adapter(other)),
         }
+    }
+
+    /// Make several searches at once
+    pub async fn multi_search<'a, D>(
+        &self,
+        search: impl Into<MultiSearch<'a>>,
+    ) -> ClientResult<MultiResponse<D>>
+    where
+        D: DeserializeOwned + Clone + std::fmt::Debug,
+    {
+        let data = self.adapter.multi_search(search.into()).await?;
+        Ok(serde_json::from_str(&data)?)
     }
 }

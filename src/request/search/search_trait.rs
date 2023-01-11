@@ -6,7 +6,7 @@ use super::*;
 /// return whatever a naked search would.
 ///
 /// If you want to find an implementation look at `Search`.
-pub trait SearchTrait: Sized {
+pub trait SearchTrait {
     /// How many documents to limit by, None will use the default
     fn limit(&self) -> Option<usize> {
         None
@@ -35,7 +35,10 @@ pub trait SearchTrait: Sized {
     /// Produces a structure that can be serialized into the body
     /// request for Elasticsearch.  This is a borrow from the trait
     /// and therefore locks modification while the body is around.
-    fn search_body(&self) -> SearchBody<'_> {
+    fn search_body(&self) -> SearchBody<'_>
+    where
+        Self: Sized,
+    {
         SearchBody::from(self)
     }
 }

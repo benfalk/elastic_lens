@@ -140,3 +140,37 @@ pub mod filter_aggregation {
         Ok(results.aggs_mut().take::<Filtered>("under-twenty")?)
     }
 }
+
+pub mod multi_search {
+    use super::inventory_item::InventoryItem;
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, Error};
+
+    pub async fn report_clothing_and_office() -> Result<(), Error> {
+        let client = create_client()?;
+
+        let mut clothing = Search::default();
+        clothing.field("category").contains("clothing");
+
+        let mut office = Search::default();
+        office.field("category").contains("office");
+
+        let results = client
+            .multi_search::<InventoryItem>(&[clothing, office])
+            .await?;
+
+        println!("Clothing:");
+
+        for doc in results[0].docs() {
+            println!("{doc:?}");
+        }
+
+        println!("\nOffice:");
+
+        for doc in results[1].docs() {
+            println!("{doc:?}");
+        }
+
+        Ok(())
+    }
+}
