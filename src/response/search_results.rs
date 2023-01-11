@@ -208,7 +208,14 @@ where
 
         struct ResultsVistor<T>(PhantomData<T>);
 
-        const FIELDS: &[&str; 5] = &["hits", "aggregations", "took", "timed_out", "_shards"];
+        const FIELDS: &[&str; 6] = &[
+            "hits",
+            "aggregations",
+            "took",
+            "timed_out",
+            "_shards",
+            "status",
+        ];
 
         impl<'de, T: Clone + fmt::Debug + Deserialize<'de>> Visitor<'de> for ResultsVistor<T> {
             type Value = SearchResults<T>;
@@ -244,6 +251,20 @@ where
                         "aggregations" => {
                             aggs = Some(map.next_value()?);
                         }
+                        // TODO: This wires up msearch to get it working as each
+                        //       result has a status in this case... but in the
+                        //       case of failure we'll need to figure out what
+                        //       happens.  Probably in the case of a multi-search
+                        //       each response could be a separate result.
+                        "status" => {
+                            let status: u16 = map.next_value()?;
+
+                            if status != 200 {
+                                return Err(de::Error::custom(format!(
+                                    "A response had a bad status: {status}"
+                                )));
+                            }
+                        }
                         unknown => Err(de::Error::unknown_field(unknown, FIELDS))?,
                     }
                 }
@@ -252,7 +273,7 @@ where
                 let took = took.ok_or_else(|| de::Error::missing_field("took"))?;
                 let timed_out = timed_out.ok_or_else(|| de::Error::missing_field("timed_out"))?;
                 let shard_stats = shard_stats.ok_or_else(|| de::Error::missing_field("_shards"))?;
-                let aggs = aggs.unwrap_or_else(AggResultCollection::default);
+                let aggs = aggs.unwrap_or_default();
 
                 Ok(SearchResults {
                     search_time: took,

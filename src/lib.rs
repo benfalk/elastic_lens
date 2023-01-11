@@ -37,5 +37,6 @@ pub mod prelude {
     pub use crate::request::search::{
         AggregationBuilder, CriteriaBuilder, IntoGeoPoint, Search, SubAggregationBuilder,
     };
+    pub use crate::request::MultiSearch;
     pub use crate::response::{Filtered, NumericTerms, Stats, StringTerms};
 }

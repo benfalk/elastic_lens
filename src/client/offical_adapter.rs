@@ -1,9 +1,12 @@
 use super::*;
+use crate::request::MultiSearch;
 use elasticsearch::{
-    http::{transport::Transport, Url},
+    http::{request::JsonBody, transport::Transport, Url},
     Elasticsearch,
 };
 use serde::Serialize;
+
+mod util;
 
 #[derive(Debug)]
 pub struct ElasticsearchAdapter {
@@ -75,6 +78,36 @@ impl ClientAdapter for ElasticsearchAdapter {
             .es_client
             .search(parts)
             .body(body)
+            .typed_keys(true)
+            .send()
+            .await?;
+
+        match response.status_code().as_u16() {
+            200 => Ok(response.text().await?),
+            code => Err(AdapterError::Internal(format!(
+                "[{code}]: {}",
+                response.text().await?
+            ))),
+        }
+    }
+
+    async fn multi_search<'a>(&self, search: MultiSearch<'a>) -> Result<String, AdapterError> {
+        use elasticsearch::MsearchParts;
+
+        let index = [self.settings.index.as_str()];
+        let mut doc = [""];
+
+        let parts = if let Some(doc_type) = self.settings.doc_type.as_ref() {
+            doc[0] = doc_type.as_str();
+            MsearchParts::IndexType(&index, &doc)
+        } else {
+            MsearchParts::Index(&index)
+        };
+
+        let response = self
+            .es_client
+            .msearch(parts)
+            .body(util::multisearch_to_body(search))
             .typed_keys(true)
             .send()
             .await?;
