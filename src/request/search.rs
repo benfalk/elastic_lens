@@ -12,6 +12,7 @@ mod geo_values;
 mod numeric_value;
 mod scalar_value;
 mod search_trait;
+mod sort_directive;
 mod target;
 
 pub use aggregation::*;
@@ -22,6 +23,7 @@ pub use geo_values::*;
 pub use numeric_value::*;
 pub use scalar_value::*;
 pub use search_trait::*;
+pub use sort_directive::*;
 pub use target::*;
 
 /// Used to construct a search request for Elasticsearch
@@ -29,6 +31,7 @@ pub use target::*;
 pub struct Search {
     positive_criteria: Vec<Criterion>,
     negative_criteria: Vec<Criterion>,
+    sorts: Vec<SortDirective>,
     aggregations: Option<AggCollection>,
     limit: Option<usize>,
     offset: Option<usize>,
@@ -71,6 +74,14 @@ impl SearchTrait for Search {
         }
     }
 
+    fn sort_directives(&self) -> Option<&Vec<SortDirective>> {
+        if self.sorts.is_empty() {
+            None
+        } else {
+            Some(&self.sorts)
+        }
+    }
+
     fn aggregations(&self) -> Option<&AggCollection> {
         self.aggregations.as_ref()
     }
@@ -91,5 +102,11 @@ impl CriteriaBuilder for Search {
 impl AggregationBuilder for Search {
     fn aggregations_mut(&mut self) -> &mut AggCollection {
         self.aggregations.get_or_insert_with(AggCollection::default)
+    }
+}
+
+impl SortBuilderTrait for Search {
+    fn sort_directives_mut(&mut self) -> &mut Vec<SortDirective> {
+        &mut self.sorts
     }
 }

@@ -16,6 +16,7 @@ impl<'a, S: SearchTrait> From<&'a S> for SearchBody<'a> {
                 },
             },
             aggs: value.aggregations(),
+            sort: value.sort_directives(),
         }
     }
 }
@@ -43,6 +44,9 @@ pub struct SearchBody<'a> {
 
     #[serde(skip_serializing_if = "SkipNode::not_needed")]
     aggs: Option<&'a AggCollection>,
+
+    #[serde(skip_serializing_if = "SkipNode::not_needed")]
+    sort: Option<&'a Vec<SortDirective>>,
 }
 
 #[derive(Debug, Serialize)]

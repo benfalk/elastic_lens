@@ -7,7 +7,7 @@ use serde::Serialize;
 /// Implement this trait in your codebase for your
 /// foreign types if you plan to use them directly
 /// for operations that require a `GeoPoint`.
-#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Default)]
 pub struct GeoPoint {
     /// The latitude is specified by degrees, starting from 0
     /// and ending up with 90° to both sides of the equator,

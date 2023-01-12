@@ -117,3 +117,5 @@ jobs:
         run: cargo run --example filter_aggs
       - name: 'Example: multi_search'
         run: cargo run --example multi_search
+      - name: 'Example: simple_sort'
+        run: cargo run --example simple_sort
