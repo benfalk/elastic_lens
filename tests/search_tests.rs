@@ -519,3 +519,67 @@ fn building_a_search_with_stats_a_missing_value() {
         })
     );
 }
+
+#[test]
+fn building_a_search_with_a_geo_sort() {
+    let mut search = Search::default();
+    use elastic_lens::request::search::GeoPoint;
+
+    search
+        .sort_field("user.location")
+        .by_distance_from(GeoPoint::default())
+        .using_the_plane_formula()
+        .in_ascending_order()
+        .ignore_unmapped_documents();
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "sort": [
+                {
+                    "_geo_distance": {
+                        "user.location": { "lat": 0.0, "lon": 0.0 },
+                        "order": "asc",
+                        "distance_type": "plane",
+                        "ignore_unmapped": true
+                    }
+                }
+            ]
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_a_normal_field_sort() {
+    let mut search = Search::default();
+
+    search.sort_field("user.age").descending();
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "sort": [
+                { "user.age": "desc" }
+            ]
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_a_normal_field_sort_and_missing_value() {
+    let mut search = Search::default();
+
+    search
+        .sort_field("user.age")
+        .ascending()
+        .where_missing_use(42);
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "sort": [
+                { "user.age": { "order": "asc", "missing": 42 } }
+            ]
+        })
+    );
+}

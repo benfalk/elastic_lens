@@ -174,3 +174,45 @@ pub mod multi_search {
         Ok(())
     }
 }
+
+pub mod geo_sort {
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, request::search::GeoPoint, response::SearchResults, Error};
+    use serde_json::Value;
+
+    pub async fn nearest_allies() -> Result<SearchResults<Value>, Error> {
+        let client = create_client()?;
+
+        let mut search = Search::default();
+
+        search.field("user.is_ally").contains(true);
+
+        search
+            .sort_field("user.location")
+            .by_distance_from(GeoPoint::new(1.1, 2.2))
+            .in_ascending_order()
+            .ignore_unmapped_documents();
+
+        Ok(client.search(&search).await?)
+    }
+}
+
+pub mod five_cheapest {
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, response::SearchResults, Error};
+    use serde_json::Value;
+
+    pub async fn five_cheapest_items() -> Result<SearchResults<Value>, Error> {
+        let client = create_client()?;
+        let mut search = Search::default();
+
+        search
+            .sort_field("cost")
+            .ascending()
+            .with_missing_values_last();
+
+        search.set_limit(5);
+
+        Ok(client.search(&search).await?)
+    }
+}

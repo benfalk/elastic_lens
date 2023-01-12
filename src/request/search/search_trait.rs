@@ -32,6 +32,11 @@ pub trait SearchTrait {
         None
     }
 
+    /// any ways to sort a search
+    fn sort_directives(&self) -> Option<&Vec<SortDirective>> {
+        None
+    }
+
     /// Produces a structure that can be serialized into the body
     /// request for Elasticsearch.  This is a borrow from the trait
     /// and therefore locks modification while the body is around.
