@@ -56,6 +56,7 @@ impl Serialize for Field {
 macro_rules! pub_field {
     ($name:ident, $value:literal) => {
         /// Field for $value
-        pub const $name: $crate::search::Field = $crate::search::Field::static_field($value);
+        pub const $name: $crate::request::search::Field =
+            $crate::request::search::Field::static_field($value);
     };
 }
