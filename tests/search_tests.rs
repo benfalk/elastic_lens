@@ -44,7 +44,7 @@ fn a_search_with_a_limit_and_offset() {
 #[test]
 fn a_search_with_a_positive_contains() {
     let mut search = Search::default();
-    search.field("foo").contains("bar");
+    search.with(field("foo").contains("bar"));
 
     assert_eq!(
         search_to_json(search),
@@ -63,7 +63,7 @@ fn a_search_with_a_positive_contains() {
 #[test]
 fn a_search_with_a_negative_contains() {
     let mut search = Search::default();
-    search.field("foo").not().contains("bar");
+    search.with(!field("foo").contains("bar"));
 
     assert_eq!(
         search_to_json(search),
@@ -82,8 +82,8 @@ fn a_search_with_a_negative_contains() {
 #[test]
 fn a_search_with_both_negative_and_positive_contains() {
     let mut search = Search::default();
-    search.field("foo").not().contains("bar");
-    search.field("foo").contains("biz");
+    search.with(!field("foo").contains("bar"));
+    search.with(field("foo").contains("biz"));
 
     assert_eq!(
         search_to_json(search),
@@ -105,7 +105,7 @@ fn a_search_with_both_negative_and_positive_contains() {
 #[test]
 fn a_search_with_less_than_range() {
     let mut search = Search::default();
-    search.field("cost").less_than(800);
+    search.with(field("cost").less_than(800));
 
     assert_eq!(
         search_to_json(search),
@@ -124,7 +124,7 @@ fn a_search_with_less_than_range() {
 #[test]
 fn a_search_with_less_than_or_equal_range() {
     let mut search = Search::default();
-    search.field("cost").less_than_or_equal(800);
+    search.with(field("cost").less_than_or_equal(800));
 
     assert_eq!(
         search_to_json(search),
@@ -143,7 +143,7 @@ fn a_search_with_less_than_or_equal_range() {
 #[test]
 fn a_search_with_greater_than_range() {
     let mut search = Search::default();
-    search.field("cost").greater_than(800);
+    search.with(field("cost").greater_than(800));
 
     assert_eq!(
         search_to_json(search),
@@ -162,7 +162,7 @@ fn a_search_with_greater_than_range() {
 #[test]
 fn a_search_with_greater_than_or_equal_range() {
     let mut search = Search::default();
-    search.field("cost").greater_than_or_equal(800);
+    search.with(field("cost").greater_than_or_equal(800));
 
     assert_eq!(
         search_to_json(search),
@@ -181,7 +181,7 @@ fn a_search_with_greater_than_or_equal_range() {
 #[test]
 fn a_search_with_between_range() {
     let mut search = Search::default();
-    search.field("cost").between(200..350);
+    search.with(field("cost").between(200..350));
 
     assert_eq!(
         search_to_json(search),
@@ -200,8 +200,8 @@ fn a_search_with_between_range() {
 #[test]
 fn a_search_with_any_of() {
     let mut search = Search::default();
-    search.field("category").any_of(["clothing", "office"]);
-    search.field("rankings").not().any_of([1, 2, 3]);
+    search.with(field("category").has_any_of(["clothing", "office"]));
+    search.with(!field("rankings").has_any_of([1, 2, 3]));
 
     assert_eq!(
         search_to_json(search),
@@ -223,8 +223,8 @@ fn a_search_with_any_of() {
 #[test]
 fn a_search_with_exists() {
     let mut search = Search::default();
-    search.field("user.hobbies").exists();
-    search.field("user.dislikes").not().exists();
+    search.with(field("user.hobbies").exists());
+    search.with(!field("user.dislikes").exists());
 
     assert_eq!(
         search_to_json(search),
@@ -248,11 +248,12 @@ fn a_search_with_geo_distance_in_miles() {
     use elastic_lens::request::search::GeoPoint;
 
     let mut search = Search::default();
-    search
-        .field("user.address.geo-point")
-        .within(50)
-        .miles()
-        .of(GeoPoint::new(1.1, 2.2));
+    search.with(
+        field("user.address.geo-point")
+            .within(50)
+            .miles()
+            .of(GeoPoint::new(1.1, 2.2)),
+    );
 
     assert_eq!(
         search_to_json(search),
@@ -281,12 +282,12 @@ fn a_search_with_geo_distance_in_kilometers_in_not() {
     use elastic_lens::request::search::GeoPoint;
 
     let mut search = Search::default();
-    search
-        .field("user.address.geo-point")
-        .not()
-        .within(50)
-        .kilomenters()
-        .of(GeoPoint::new(1.1, 2.2));
+    search.with(
+        !field("user.address.geo-point")
+            .within(50)
+            .kilomenters()
+            .of(GeoPoint::new(1.1, 2.2)),
+    );
 
     assert_eq!(
         search_to_json(search),
@@ -314,10 +315,10 @@ fn a_search_with_geo_distance_in_kilometers_in_not() {
 fn a_search_with_simple_if_any_match() {
     let mut search = Search::default();
 
-    search.if_any_match(|critera| {
-        critera.field("user.role").contains("admin");
-        critera.field("user.score").greater_than(9000);
-    });
+    search.with(if_any_match(|critera| {
+        critera.with(field("user.role").contains("admin"));
+        critera.with(field("user.score").greater_than(9000));
+    }));
 
     assert_eq!(
         search_to_json(search),
@@ -344,14 +345,11 @@ fn a_search_with_simple_if_any_match() {
 fn a_search_with_not_in_if_any_match() {
     let mut search = Search::default();
 
-    search.if_any_match(|critera| {
-        critera.field("user.role").contains("admin");
-        critera.field("user.score").greater_than(9000);
-        critera
-            .field("user.hobbies")
-            .not()
-            .any_of(["swimming", "tennis"]);
-    });
+    search.with(if_any_match(|critera| {
+        critera.with(field("user.role").contains("admin"));
+        critera.with(field("user.score").greater_than(9000));
+        critera.with(!field("user.hobbies").has_any_of(["swimming", "tennis"]));
+    }));
 
     assert_eq!(
         search_to_json(search),
@@ -385,14 +383,14 @@ fn a_search_with_not_in_if_any_match() {
 fn a_search_using_if_all_match_inside_if_any_match() {
     let mut search = Search::default();
 
-    search.if_any_match(|q| {
-        q.field("user.role").contains("admin");
+    search.with(if_any_match(|q| {
+        q.with(field("user.role").contains("admin"));
 
-        q.if_all_match(|a| {
-            a.field("user.banned").not().contains(true);
-            a.field("user.group").any_of(["rust", "fps"]);
-        });
-    });
+        q.with(if_all_match(|a| {
+            a.with(!field("user.banned").contains(true));
+            a.with(field("user.group").has_any_of(["rust", "fps"]));
+        }));
+    }));
 
     assert_eq!(
         search_to_json(search),

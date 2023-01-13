@@ -1,11 +1,6 @@
 use super::*;
-
 mod buckets;
-mod field_criteria_builder;
-mod geo_distance_builder;
-
 pub use buckets::*;
-pub use field_criteria_builder::*;
 
 /// This is the work-horse of building critera for a search.  The
 /// only two methods that are required are `positive_criteria_mut`
@@ -25,35 +20,9 @@ pub trait CriteriaBuilder: Sized {
     /// criteria.  These are criteria which exclude when true.
     fn negative_criteria_mut(&mut self) -> &mut Vec<Criterion>;
 
-    /// Begin construction of a criterion targeting a field
-    fn field<F>(&mut self, field: F) -> FieldCriteriaBuilder<'_, Self::Bucket, Self>
-    where
-        F: Into<Field>,
-        Self::Bucket: BucketPlacer,
-    {
-        FieldCriteriaBuilder::new(self, field.into())
-    }
-
-    /// Selects if any of the created conditions is true
-    fn if_any_match<F>(&mut self, mut func: F)
-    where
-        F: FnMut(&mut AnyMatch),
-    {
-        let mut any_match = AnyMatch::default();
-        func(&mut any_match);
-        <Self::Bucket as BucketPlacer>::push(self, any_match);
-    }
-
-    /// Creates a grouped set of critera that must
-    /// all match for the selection to match.  This is
-    /// only available from an `AnyMatch` builder.
-    fn if_all_match<F>(&mut self, mut func: F)
-    where
-        F: FnMut(&mut AllMatch),
-        Self::Bucket: OrBucketPlacer,
-    {
-        let mut all_match = AllMatch::default();
-        func(&mut all_match);
-        <Self::Bucket as BucketPlacer>::push(self, all_match);
+    /// Having the provided condition
+    fn with<SC: Into<SearchCondition>>(&mut self, condition: SC) {
+        let condition = condition.into();
+        <Self::Bucket as BucketPlacer>::push(self, condition.criterion, condition.tag);
     }
 }

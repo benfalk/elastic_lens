@@ -77,6 +77,12 @@ impl RangeFilterBuilder {
     }
 }
 
+impl From<RangeFilterBuilder> for SearchCondition {
+    fn from(value: RangeFilterBuilder) -> Self {
+        SearchCondition::from(value.build())
+    }
+}
+
 #[derive(Debug, Clone)]
 enum LowerBound {
     GreaterThan(ScalarValue),

@@ -11,10 +11,10 @@ async fn main() -> Result<(), Error> {
         .build()?;
 
     let mut clothing = Search::default();
-    clothing.field("category").contains("clothing");
+    clothing.with(field("category").contains("clothing"));
 
     let mut office = Search::default();
-    office.field("category").contains("office");
+    office.with(field("category").contains("office"));
 
     let results = client
         .multi_search::<InventoryItem>(&[clothing, office])

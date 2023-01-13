@@ -1,6 +1,16 @@
 use super::*;
 use serde::Serialize;
 
+/// Selects if any of the criteria given match
+pub fn if_any_match<F>(mut func: F) -> AnyMatch
+where
+    F: FnMut(&mut AnyMatch),
+{
+    let mut any = AnyMatch::default();
+    func(&mut any);
+    any
+}
+
 /// A grouped set of criteria where only one
 /// has to match for the document to be selected
 #[derive(Debug, Clone, Default)]
