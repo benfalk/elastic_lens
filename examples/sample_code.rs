@@ -17,7 +17,7 @@ pub mod create_client {
 }
 
 pub mod create_an_run_search {
-    use super::inventory_item::InventoryItem;
+    use super::inventory_item::*;
     use crate::create_client::create_client;
     use elastic_lens::{prelude::*, response::SearchResults, Error};
 
@@ -25,8 +25,8 @@ pub mod create_an_run_search {
         let client = create_client()?;
 
         let mut search = Search::default();
-        search.with(field("category").contains("clothing"));
-        search.with(field("cost").greater_than(500));
+        search.with(CATEGORY.contains("clothing"));
+        search.with(COST.greater_than(500));
 
         Ok(client.search(&search).await?)
     }
@@ -114,6 +114,7 @@ pub mod stats_aggregation {
 }
 
 pub mod filter_aggregation {
+    use super::inventory_item::*;
     use crate::create_client::create_client;
     use elastic_lens::{prelude::*, Error};
 
@@ -124,7 +125,7 @@ pub mod filter_aggregation {
 
         search
             .create_aggregation("under-twenty")
-            .filtered_by(|search| search.with(field("cost").less_than(20_00)))
+            .filtered_by(|search| search.with(COST.less_than(20_00)))
             .with_sub_aggregations(|aggs| {
                 aggs.create_aggregation("categories")
                     .for_field("category")
@@ -143,7 +144,7 @@ pub mod filter_aggregation {
 }
 
 pub mod multi_search {
-    use super::inventory_item::InventoryItem;
+    use super::inventory_item::*;
     use crate::create_client::create_client;
     use elastic_lens::{prelude::*, Error};
 
@@ -151,10 +152,10 @@ pub mod multi_search {
         let client = create_client()?;
 
         let mut clothing = Search::default();
-        clothing.with(field("category").contains("clothing"));
+        clothing.with(CATEGORY.contains("clothing"));
 
         let mut office = Search::default();
-        office.with(field("category").contains("office"));
+        office.with(CATEGORY.contains("office"));
 
         let results = client
             .multi_search::<InventoryItem>(&[clothing, office])

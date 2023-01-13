@@ -40,7 +40,7 @@ pub fn create_client() -> Result<Client<DefaultAdapter>, Error> {
 
 ```rust
 // See `examples/inventory_item.rs` for definition
-use super::inventory_item::InventoryItem;
+use super::inventory_item::*;
 
 use elastic_lens::{prelude::*, response::SearchResults, Error};
 
@@ -48,8 +48,8 @@ pub async fn clothing_inventory() -> Result<SearchResults<InventoryItem>, Error>
     let client = create_client()?;
 
     let mut search = Search::default();
-    search.with(field("category").contains("clothing"));
-    search.with(field("cost").greater_than(500));
+    search.with(CATEGORY.contains("clothing"));
+    search.with(COST.greater_than(500));
 
     Ok(client.search(&search).await?)
 }
@@ -96,17 +96,17 @@ pub async fn complex_search() -> Result<SearchResults<Value>, Error> {
 ### MultiSearch
 
 ```rust
-use super::inventory_item::InventoryItem;
+use super::inventory_item::*;
 use elastic_lens::{prelude::*, Error};
 
 pub async fn report_clothing_and_office() -> Result<(), Error> {
     let client = create_client()?;
 
     let mut clothing = Search::default();
-    clothing.with(field("category").contains("clothing"));
+    clothing.with(CATEGORY.contains("clothing"));
 
     let mut office = Search::default();
-    office.with(field("category").contains("office"));
+    office.with(CATEGORY.contains("office"));
 
     let results = client
         .multi_search::<InventoryItem>(&[clothing, office])
@@ -221,6 +221,7 @@ pub async fn collect_price_stats() -> Result<Stats, Error> {
 ### Filter Aggregations
 
 ```rust
+use super::inventory_item::*;
 use elastic_lens::{prelude::*, Error};
 
 pub async fn less_than_20_report() -> Result<Filtered, Error> {
@@ -230,7 +231,7 @@ pub async fn less_than_20_report() -> Result<Filtered, Error> {
 
     search
         .create_aggregation("under-twenty")
-        .filtered_by(|search| search.with(field("cost").less_than(20_00)))
+        .filtered_by(|search| search.with(COST.less_than(20_00)))
         .with_sub_aggregations(|aggs| {
             aggs.create_aggregation("categories")
                 .for_field("category")

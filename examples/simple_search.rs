@@ -2,7 +2,7 @@ mod inventory_item;
 
 use elastic_lens::prelude::*;
 use elastic_lens::Error;
-use inventory_item::InventoryItem;
+use inventory_item::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -13,9 +13,9 @@ async fn main() -> Result<(), Error> {
 
     let mut search = Search::default();
 
-    search.with(field("category").contains("clothing"));
-    search.with(!field("sub_category").contains("beanie"));
-    search.with(field("cost").between(1000..2000));
+    search.with(CATEGORY.contains("clothing"));
+    search.with(!SUB_CATEGORY.contains("beanie"));
+    search.with(COST.between(1000..2000));
 
     search.set_limit(10);
 
