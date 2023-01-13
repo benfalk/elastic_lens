@@ -25,8 +25,8 @@ pub mod create_an_run_search {
         let client = create_client()?;
 
         let mut search = Search::default();
-        search.field("category").contains("clothing");
-        search.field("cost").greater_than(500);
+        search.with(field("category").contains("clothing"));
+        search.with(field("cost").greater_than(500));
 
         Ok(client.search(&search).await?)
     }
@@ -46,23 +46,24 @@ pub mod complex_search {
 
         let mut search = Search::default();
 
-        search
-            .field("server.location")
-            .within(500)
-            .miles()
-            .of(GeoPoint::new(12.2, 18.9));
+        search.with(
+            field("server.location")
+                .within(500)
+                .miles()
+                .of(GeoPoint::new(12.2, 18.9)),
+        );
 
-        search.field("log.level").any_of(["error", "warning"]);
-        search.field("log.trace").exists();
+        search.with(field("log.level").has_any_of(["error", "warning"]));
+        search.with(field("log.trace").exists());
 
-        search.if_any_match(|any| {
-            any.field("service").contains("backend-core");
+        search.with(if_any_match(|any| {
+            any.with(field("service").contains("backend-core"));
 
-            any.if_all_match(|all| {
-                all.field("service").contains("frontend-core");
-                all.field("tags").any_of(["market-place", "registration"]);
-            });
-        });
+            any.with(if_all_match(|all| {
+                all.with(field("service").contains("frontend-core"));
+                all.with(field("tags").has_any_of(["market-place", "registration"]));
+            }));
+        }));
 
         Ok(client.search(&search).await?)
     }
@@ -123,7 +124,7 @@ pub mod filter_aggregation {
 
         search
             .create_aggregation("under-twenty")
-            .filtered_by(|search| search.field("cost").less_than(20_00))
+            .filtered_by(|search| search.with(field("cost").less_than(20_00)))
             .with_sub_aggregations(|aggs| {
                 aggs.create_aggregation("categories")
                     .for_field("category")
@@ -150,10 +151,10 @@ pub mod multi_search {
         let client = create_client()?;
 
         let mut clothing = Search::default();
-        clothing.field("category").contains("clothing");
+        clothing.with(field("category").contains("clothing"));
 
         let mut office = Search::default();
-        office.field("category").contains("office");
+        office.with(field("category").contains("office"));
 
         let results = client
             .multi_search::<InventoryItem>(&[clothing, office])
@@ -185,7 +186,7 @@ pub mod geo_sort {
 
         let mut search = Search::default();
 
-        search.field("user.is_ally").contains(true);
+        search.with(field("user.is_ally").contains(true));
 
         search
             .sort_field("user.location")

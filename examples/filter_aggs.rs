@@ -12,7 +12,7 @@ async fn main() -> Result<(), Error> {
 
     search
         .create_aggregation("under-twenty")
-        .filtered_by(|search| search.field("cost").less_than(20_00))
+        .filtered_by(|search| search.with(field("cost").less_than(20_00)))
         .with_sub_aggregations(|aggs| {
             aggs.create_aggregation("categories")
                 .for_field("category")

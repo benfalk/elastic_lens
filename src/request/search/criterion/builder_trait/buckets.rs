@@ -3,7 +3,7 @@ use super::*;
 /// ZST trait tag to decide where criteria are placed for a builder
 pub trait BucketPlacer {
     /// place the criterion where it makes sense to
-    fn push<C, B>(builder: &mut B, criterion: C)
+    fn push<C, B>(builder: &mut B, criterion: C, tag: Tag)
     where
         C: Into<Criterion>,
         B: CriteriaBuilder;
@@ -13,29 +13,22 @@ pub trait BucketPlacer {
 /// bucket.  This also helps to switch to a "negative" bucket
 /// when in positive mode and avoid nested "nots".
 #[derive(Debug, Copy, Clone)]
-pub struct PositiveBucket {}
+pub struct NormalBucket {}
 
-impl BucketPlacer for PositiveBucket {
-    fn push<C, B>(builder: &mut B, criterion: C)
+impl BucketPlacer for NormalBucket {
+    fn push<C, B>(builder: &mut B, criterion: C, tag: Tag)
     where
         C: Into<Criterion>,
         B: CriteriaBuilder,
     {
-        builder.positive_criteria_mut().push(criterion.into());
-    }
-}
-
-/// ZST struct which places criteria into the negative bucket.
-#[derive(Debug, Copy, Clone)]
-pub struct NegativeBucket {}
-
-impl BucketPlacer for NegativeBucket {
-    fn push<C, B>(builder: &mut B, criterion: C)
-    where
-        C: Into<Criterion>,
-        B: CriteriaBuilder,
-    {
-        builder.negative_criteria_mut().push(criterion.into());
+        match tag {
+            Tag::Positive => {
+                builder.positive_criteria_mut().push(criterion.into());
+            }
+            Tag::Negative => {
+                builder.negative_criteria_mut().push(criterion.into());
+            }
+        }
     }
 }
 
@@ -52,31 +45,19 @@ pub trait OrBucketPlacer: BucketPlacer {}
 pub struct GroupedOrBucket {}
 
 impl BucketPlacer for GroupedOrBucket {
-    fn push<C, B>(builder: &mut B, criterion: C)
+    fn push<C, B>(builder: &mut B, criterion: C, tag: Tag)
     where
         C: Into<Criterion>,
         B: CriteriaBuilder,
     {
-        builder.positive_criteria_mut().push(criterion.into());
-    }
-}
-
-impl OrBucketPlacer for GroupedOrBucket {}
-
-/// This is the tag that lets the builder trait know
-/// it has transitioned from the `GroupedOrBucket`
-/// to a negative condition and that it needs to be
-/// jailed by itself.
-#[derive(Debug, Copy, Clone)]
-pub struct NegativeGroupedOrBucket {}
-
-impl BucketPlacer for NegativeGroupedOrBucket {
-    fn push<C, B>(builder: &mut B, criterion: C)
-    where
-        C: Into<Criterion>,
-        B: CriteriaBuilder,
-    {
-        let not_all = NotAll::single(criterion);
-        builder.positive_criteria_mut().push(not_all.into());
+        match tag {
+            Tag::Positive => {
+                builder.positive_criteria_mut().push(criterion.into());
+            }
+            Tag::Negative => {
+                let not_all = NotAll::single(criterion);
+                builder.positive_criteria_mut().push(not_all.into());
+            }
+        }
     }
 }

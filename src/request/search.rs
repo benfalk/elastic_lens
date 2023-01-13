@@ -6,6 +6,7 @@
 
 mod aggregation;
 mod body;
+mod condition;
 mod criterion;
 mod field;
 mod geo_values;
@@ -17,6 +18,7 @@ mod target;
 
 pub use aggregation::*;
 pub use body::*;
+pub use condition::*;
 pub use criterion::*;
 pub use field::*;
 pub use geo_values::*;
@@ -88,7 +90,7 @@ impl SearchTrait for Search {
 }
 
 impl CriteriaBuilder for Search {
-    type Bucket = PositiveBucket;
+    type Bucket = NormalBucket;
 
     fn positive_criteria_mut(&mut self) -> &mut Vec<Criterion> {
         &mut self.positive_criteria
