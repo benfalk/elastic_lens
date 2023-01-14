@@ -119,3 +119,5 @@ jobs:
         run: cargo run --example multi_search
       - name: 'Example: simple_sort'
         run: cargo run --example simple_sort
+      - name: 'Example: script_sort'
+        run: cargo run --example script_sort
