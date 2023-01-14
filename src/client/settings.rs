@@ -4,6 +4,7 @@
 pub struct Settings {
     pub(super) index: String,
     pub(super) host: String,
+    #[cfg(feature = "es_7")]
     pub(super) doc_type: Option<String>,
     pub(super) credentials: Option<Credentials>,
     pub(crate) default_limit: Option<usize>,

@@ -1,5 +1,8 @@
 # Elastic Lens
 
+[![Crates.io](https://img.shields.io/crates/v/elastic_lens.svg)](https://crates.io/crates/elastic_lens)
+[![Rust](https://github.com/benfalk/elastic_lens/workflows/CI/badge.svg)](https://github.com/benfalk/elastic_lens/actions)
+
 > An opinionated framework to work with Elasticsearch.
 
 ## About
@@ -13,6 +16,19 @@ This project is in it's infancy and is currently supporting a
 real work project.  This is what is driving it's development
 for now; however, if you have suggestions or edits please feel
 free to open an issue :+1:.
+
+## Getting Started
+
+In your `Cargo.toml` file:
+
+```toml
+# You must pick one of the currently two supported adapters
+# - "offical_es7"
+# - "offical_es8"
+elastic_lens = { version = "0.1.0", features=["offical_es7"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+```
 
 ## Functionality Tour
 

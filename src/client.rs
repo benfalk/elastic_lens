@@ -8,6 +8,7 @@
 
 mod adapter;
 mod builder;
+#[cfg(feature = "offical_client")]
 mod offical_adapter;
 mod settings;
 
@@ -22,6 +23,7 @@ use crate::{
 use serde::de::DeserializeOwned;
 
 /// The adapter which is used by default for the ClientBuilder
+#[cfg(feature = "offical_client")]
 pub type DefaultAdapter = offical_adapter::ElasticsearchAdapter;
 
 /// Result for the client where the Error is always a ClientError
@@ -49,6 +51,7 @@ pub struct Client<T: ClientAdapter> {
     settings: Settings,
 }
 
+#[cfg(feature = "offical_client")]
 impl Client<DefaultAdapter> {
     /// Create a builder which drives the creation of a client
     pub fn default_builder() -> ClientBuilder<DefaultAdapter> {
