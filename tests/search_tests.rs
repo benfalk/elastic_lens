@@ -523,12 +523,13 @@ fn building_a_search_with_a_geo_sort() {
     let mut search = Search::default();
     use elastic_lens::request::search::GeoPoint;
 
-    search
-        .sort_field("user.location")
-        .by_distance_from(GeoPoint::default())
-        .using_the_plane_formula()
-        .in_ascending_order()
-        .ignore_unmapped_documents();
+    search.sort(
+        by_field("user.location")
+            .by_distance_from(GeoPoint::default())
+            .using_the_plane_formula()
+            .in_ascending_order()
+            .ignore_unmapped_documents(),
+    );
 
     assert_eq!(
         search_to_json(search),
@@ -551,7 +552,7 @@ fn building_a_search_with_a_geo_sort() {
 fn building_a_search_with_a_normal_field_sort() {
     let mut search = Search::default();
 
-    search.sort_field("user.age").descending();
+    search.sort(by_field("user.age").descending());
 
     assert_eq!(
         search_to_json(search),
@@ -567,10 +568,7 @@ fn building_a_search_with_a_normal_field_sort() {
 fn building_a_search_with_a_normal_field_sort_and_missing_value() {
     let mut search = Search::default();
 
-    search
-        .sort_field("user.age")
-        .ascending()
-        .where_missing_use(42);
+    search.sort(by_field("user.age").ascending().where_missing_use(42));
 
     assert_eq!(
         search_to_json(search),
@@ -578,6 +576,65 @@ fn building_a_search_with_a_normal_field_sort_and_missing_value() {
             "sort": [
                 { "user.age": { "order": "asc", "missing": 42 } }
             ]
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_a_script_sort() {
+    let mut search = Search::default();
+
+    search.with(field("user.role").contains("admin"));
+    search.sort(by_script("doc['my-int'].value / 10"));
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "script_score": {
+                    "query": {
+                        "bool": {
+                            "filter": [
+                                { "term": { "user.role": "admin" } }
+                            ]
+                        }
+                    },
+                    "script": {
+                        "source": "doc['my-int'].value / 10"
+                    }
+                }
+            }
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_a_script_sort_and_params() {
+    let mut search = Search::default();
+
+    search.with(field("user.role").contains("admin"));
+    search.sort(by_script("doc['my-int'].value / 10 + params.spice").with_params([("spice", 42)]));
+
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "script_score": {
+                    "query": {
+                        "bool": {
+                            "filter": [
+                                { "term": { "user.role": "admin" } }
+                            ]
+                        }
+                    },
+                    "script": {
+                        "source": "doc['my-int'].value / 10 + params.spice",
+                        "params": {
+                            "spice": 42
+                        }
+                    }
+                }
+            }
         })
     );
 }

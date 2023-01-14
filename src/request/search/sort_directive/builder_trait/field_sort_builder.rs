@@ -3,21 +3,18 @@ use super::*;
 /// The first step towards building a sort where a document
 /// field is the target
 #[derive(Debug)]
-#[must_use = "A selection must be made to build a sort"]
-pub struct FieldSortBuilder<'a> {
+pub struct FieldSortBuilder {
     pub(super) field: Field,
-    pub(super) sorts: &'a mut Vec<SortDirective>,
 }
 
-impl<'a> FieldSortBuilder<'a> {
+impl FieldSortBuilder {
     /// Creates a geo-distance sort. There are a number of options
     /// you can add to this sort, but when you end the chain it
     /// will build with whatever options you take.
-    pub fn by_distance_from<P: IntoGeoPoint>(self, location: P) -> GeoDistanceSortBuilder<'a> {
+    pub fn by_distance_from<P: IntoGeoPoint>(self, location: P) -> GeoDistanceSortBuilder {
         GeoDistanceSortBuilder {
             field: self.field,
             location: location.into_geo_point(),
-            sorts: self.sorts,
             order: None,
             ignore_unmapped: None,
             calc_formula: None,
@@ -25,22 +22,30 @@ impl<'a> FieldSortBuilder<'a> {
     }
 
     /// sort field in decending order
-    pub fn descending(self) -> FieldSortBuilderOptions<'a> {
+    pub fn descending(self) -> FieldSortBuilderOptions {
         FieldSortBuilderOptions {
             field: self.field,
-            sorts: self.sorts,
             direction: SortDirection::Descending,
             missing_value: None,
         }
     }
 
     /// sort field in ascending order
-    pub fn ascending(self) -> FieldSortBuilderOptions<'a> {
+    pub fn ascending(self) -> FieldSortBuilderOptions {
         FieldSortBuilderOptions {
             field: self.field,
-            sorts: self.sorts,
             direction: SortDirection::Ascending,
             missing_value: None,
         }
+    }
+}
+
+impl From<FieldSortBuilder> for SortDirective {
+    fn from(value: FieldSortBuilder) -> Self {
+        Self::Field(SortField {
+            field: value.field,
+            direction: None,
+            missing_value: None,
+        })
     }
 }

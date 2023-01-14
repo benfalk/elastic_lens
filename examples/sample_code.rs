@@ -189,11 +189,40 @@ pub mod geo_sort {
 
         search.with(field("user.is_ally").contains(true));
 
-        search
-            .sort_field("user.location")
-            .by_distance_from(GeoPoint::new(1.1, 2.2))
-            .in_ascending_order()
-            .ignore_unmapped_documents();
+        search.sort(
+            by_field("user.location")
+                .by_distance_from(GeoPoint::new(1.1, 2.2))
+                .in_ascending_order()
+                .ignore_unmapped_documents(),
+        );
+
+        Ok(client.search(&search).await?)
+    }
+}
+
+pub mod script_sort {
+    use super::inventory_item::*;
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, response::SearchResults, Error};
+
+    pub async fn some_cheaper_first() -> Result<SearchResults<InventoryItem>, Error> {
+        let client = create_client()?;
+        let mut search = Search::default();
+
+        search.with(!SUB_CATEGORY.contains("beanie"));
+
+        search.sort(
+            by_script(
+                r#"
+                  if ( doc['cost'].value > params.breakpoint ) {
+                      doc['cost'].value / 100
+                  } else {
+                      doc['cost'].value * 100
+                  }
+                "#,
+            )
+            .with_params([("breakpoint", 1300)]),
+        );
 
         Ok(client.search(&search).await?)
     }
@@ -208,10 +237,7 @@ pub mod five_cheapest {
         let client = create_client()?;
         let mut search = Search::default();
 
-        search
-            .sort_field("cost")
-            .ascending()
-            .with_missing_values_last();
+        search.sort(by_field("cost").ascending().with_missing_values_last());
 
         search.set_limit(5);
 

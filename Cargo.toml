@@ -46,6 +46,10 @@ path = "examples/multi_search.rs"
 name = "simple_sort"
 path = "examples/simple_sort.rs"
 
+[[example]]
+name = "script_sort"
+path = "examples/script_sort.rs"
+
 # To avoid repeating the same model over and
 # over between examples this serves as a shared
 # lib for them
