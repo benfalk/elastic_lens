@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        feature: [offical_es7, offical_es8]
+        feature: [official_es7, official_es8]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        feature: [offical_es7, offical_es8]
+        feature: [official_es7, official_es8]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -70,7 +70,7 @@ jobs:
   clippy:
     strategy:
       matrix:
-        feature: [offical_es7, offical_es8]
+        feature: [official_es7, official_es8]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -90,7 +90,7 @@ jobs:
   examples:
     strategy:
       matrix:
-        feature: [offical_es7, offical_es8]
+        feature: [official_es7, official_es8]
     runs-on: ubuntu-latest
     steps:
       - name: Configure sysctl limits

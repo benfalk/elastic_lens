@@ -1,15 +1,15 @@
 //!
 //! Any iteractions between your code and the Elasticsearch server
 //! are encapsulated under this module.  One major note is that you
-//! are not working directly with an offical client, although one may
+//! are not working directly with an official client, although one may
 //! be supported later.  What you are working with instead is a wrapper
 //! around some third party library that is doing the heavy lifting.
 //!
 
 mod adapter;
 mod builder;
-#[cfg(feature = "offical_client")]
-mod offical_adapter;
+#[cfg(feature = "official_client")]
+mod official_adapter;
 mod settings;
 
 pub use adapter::*;
@@ -23,8 +23,8 @@ use crate::{
 use serde::de::DeserializeOwned;
 
 /// The adapter which is used by default for the ClientBuilder
-#[cfg(feature = "offical_client")]
-pub type DefaultAdapter = offical_adapter::ElasticsearchAdapter;
+#[cfg(feature = "official_client")]
+pub type DefaultAdapter = official_adapter::ElasticsearchAdapter;
 
 /// Result for the client where the Error is always a ClientError
 pub type ClientResult<T> = std::result::Result<T, ClientError>;
@@ -51,7 +51,7 @@ pub struct Client<T: ClientAdapter> {
     settings: Settings,
 }
 
-#[cfg(feature = "offical_client")]
+#[cfg(feature = "official_client")]
 impl Client<DefaultAdapter> {
     /// Create a builder which drives the creation of a client
     pub fn default_builder() -> ClientBuilder<DefaultAdapter> {
