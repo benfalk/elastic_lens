@@ -5,6 +5,12 @@ edition = "2021"
 authors = [
   "Ben Falk <benjamin.falk@yahoo.com>"
 ]
+description = "An opinionated framework to work with Elasticsearch."
+license-file = "LICENSE.md"
+repository = "https://github.com/benfalk/elastic_lens"
+categories = ["framework"]
+keywords = ["elasticsearch"]
+readme = "README.md"
 
 # See more keys and their definitions at:
 #   https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -15,9 +21,15 @@ serde_json = { version = "1.0" }
 thiserror = { version = "1.0" }
 async-trait = { version = "0.1" }
 arraystring = { version = "0.3.0" }
+elastic_lens_offical_es7 = { version = "7", optional = true }
+elastic_lens_offical_es8 = { version = "8", optional = true }
 
-# TODO: make this optional with a version?
-elasticsearch = "7.14.0-alpha.1"
+[features]
+offical_client = []
+es_7 = []
+es_8 = []
+offical_es7 = ["elastic_lens_offical_es7", "offical_client", "es_7"]
+offical_es8 = ["elastic_lens_offical_es8", "offical_client", "es_8"]
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }

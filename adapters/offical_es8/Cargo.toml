@@ -1,0 +1,12 @@
+[package]
+name = "elastic_lens_offical_es8"
+version = "8.5.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/benfalk/elastic_lens"
+description = "Tag for Elasticsearch 7.x.x to be used by ElasticLens"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+elasticsearch = { version = "8.5.0-alpha.1" }

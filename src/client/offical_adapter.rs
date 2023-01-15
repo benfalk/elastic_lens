@@ -1,5 +1,12 @@
 use super::*;
 use crate::request::MultiSearch;
+
+#[cfg(feature = "es_7")]
+use elastic_lens_offical_es7::elasticsearch;
+
+#[cfg(feature = "es_8")]
+use elastic_lens_offical_es8::elasticsearch;
+
 use elasticsearch::{
     http::{request::JsonBody, transport::Transport, Url},
     Elasticsearch,
@@ -43,11 +50,15 @@ impl ClientAdapter for ElasticsearchAdapter {
     async fn get_by_id(&self, id: &str) -> Result<String, AdapterError> {
         use elasticsearch::GetParts;
 
+        #[cfg(feature = "es_7")]
         let parts = if let Some(doc_type) = &self.settings.doc_type {
             GetParts::IndexTypeId(&self.settings.index, doc_type, id)
         } else {
             GetParts::IndexId(&self.settings.index, id)
         };
+
+        #[cfg(feature = "es_8")]
+        let parts = GetParts::IndexId(&self.settings.index, id);
 
         let response = self.es_client.get(parts).send().await?;
 
@@ -65,14 +76,20 @@ impl ClientAdapter for ElasticsearchAdapter {
         use elasticsearch::SearchParts;
 
         let index = [self.settings.index.as_str()];
+
+        #[cfg(feature = "es_7")]
         let mut doc = [""];
 
+        #[cfg(feature = "es_7")]
         let parts = if let Some(doc_type) = self.settings.doc_type.as_ref() {
             doc[0] = doc_type.as_str();
             SearchParts::IndexType(&index, &doc)
         } else {
             SearchParts::Index(&index)
         };
+
+        #[cfg(feature = "es_8")]
+        let parts = SearchParts::Index(&index);
 
         let response = self
             .es_client
@@ -95,14 +112,20 @@ impl ClientAdapter for ElasticsearchAdapter {
         use elasticsearch::MsearchParts;
 
         let index = [self.settings.index.as_str()];
+
+        #[cfg(feature = "es_7")]
         let mut doc = [""];
 
+        #[cfg(feature = "es_7")]
         let parts = if let Some(doc_type) = self.settings.doc_type.as_ref() {
             doc[0] = doc_type.as_str();
             MsearchParts::IndexType(&index, &doc)
         } else {
             MsearchParts::Index(&index)
         };
+
+        #[cfg(feature = "es_8")]
+        let parts = MsearchParts::Index(&index);
 
         let response = self
             .es_client

@@ -22,6 +22,9 @@
     )
 )]
 
+#[cfg(all(feature = "es_7", feature = "es_8"))]
+compile_error!("feature \"es_7\" and feature \"es_8\" cannot be enabled at the same time");
+
 pub mod client;
 pub mod request;
 pub mod response;

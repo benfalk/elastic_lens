@@ -5,6 +5,7 @@ use super::*;
 pub struct ClientBuilder<T: ClientAdapter> {
     index: Option<String>,
     host: Option<String>,
+    #[cfg(feature = "es_7")]
     doc_type: Option<String>,
     credentials: Option<Credentials>,
     default_limit: Option<usize>,
@@ -30,6 +31,7 @@ impl<T: ClientAdapter> Default for ClientBuilder<T> {
         Self {
             index: None,
             host: None,
+            #[cfg(feature = "es_7")]
             doc_type: None,
             credentials: None,
             default_limit: None,
@@ -72,6 +74,7 @@ impl<T: ClientAdapter> ClientBuilder<T> {
     /// purposes.  If this is you consider getting away from that
     /// sooner than later.
     ///
+    #[cfg(feature = "es_7")]
     pub fn doc_type<S: Into<String>>(mut self, doc_type: S) -> Self {
         self.doc_type = Some(doc_type.into());
         self
@@ -158,6 +161,7 @@ impl<T: ClientAdapter> ClientBuilder<T> {
         Ok(Settings {
             host: self.host.take().unwrap(),
             index: self.index.take().unwrap(),
+            #[cfg(feature = "es_7")]
             doc_type: self.doc_type.take(),
             credentials: self.credentials.take(),
             default_limit: self.default_limit.take(),
