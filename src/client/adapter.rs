@@ -44,8 +44,8 @@ pub trait ClientAdapter: private::SealedClientAdapter {
 mod private {
     pub trait SealedClientAdapter: Send + Sync + Sized {}
 
-    #[cfg(feature = "offical_client")]
-    use crate::client::offical_adapter::ElasticsearchAdapter;
-    #[cfg(feature = "offical_client")]
+    #[cfg(feature = "official_client")]
+    use crate::client::official_adapter::ElasticsearchAdapter;
+    #[cfg(feature = "official_client")]
     impl SealedClientAdapter for ElasticsearchAdapter {}
 }

@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Ben Falk <benjamin.falk@yahoo.com>"
@@ -25,11 +25,11 @@ elastic_lens_offical_es7 = { version = "7", optional = true }
 elastic_lens_offical_es8 = { version = "8", optional = true }
 
 [features]
-offical_client = []
+official_client = []
 es_7 = []
 es_8 = []
-offical_es7 = ["elastic_lens_offical_es7", "offical_client", "es_7"]
-offical_es8 = ["elastic_lens_offical_es8", "offical_client", "es_8"]
+official_es7 = ["elastic_lens_offical_es7", "official_client", "es_7"]
+official_es8 = ["elastic_lens_offical_es8", "official_client", "es_8"]
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }

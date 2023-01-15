@@ -23,9 +23,9 @@ In your `Cargo.toml` file:
 
 ```toml
 # You must pick one of the currently two supported adapters
-# - "offical_es7"
-# - "offical_es8"
-elastic_lens = { version = "0.1.0", features=["offical_es7"] }
+# - "official_es7"
+# - "official_es8"
+elastic_lens = { version = "0.1.1", features = ["official_es7"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 ```
