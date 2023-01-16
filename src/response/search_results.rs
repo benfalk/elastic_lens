@@ -78,9 +78,41 @@ impl<T> SearchResults<T> {
         self.hits.iter()
     }
 
+    /// mutable iterator over the entire hit from your search
+    pub fn hits_mut(&mut self) -> impl Iterator<Item = &mut DocumentHit<T>> {
+        self.hits.iter_mut()
+    }
+
+    /// takes the entire document hit collection from the results
+    pub fn hits_take(&mut self) -> Vec<DocumentHit<T>> {
+        let mut hits = vec![];
+        std::mem::swap(&mut hits, &mut self.hits);
+        hits
+    }
+
+    /// extracts the documents out of the results and returns them
+    /// as a vector.  This completely drains all of the document data
+    /// from the results leaving it empty.
+    pub fn docs_take(&mut self) -> Vec<T> {
+        let capacity = self.hits.len();
+
+        self.hits
+            .drain(..)
+            .map(|h| h.doc)
+            .rfold(Vec::with_capacity(capacity), |mut docs, doc| {
+                docs.push(doc);
+                docs
+            })
+    }
+
     /// convenience iterator over the documents from your current search
     pub fn docs(&self) -> impl Iterator<Item = &T> {
         self.hits.iter().map(|d| &d.doc)
+    }
+
+    /// convenience mutable document iterator from your search
+    pub fn docs_mut(&mut self) -> impl Iterator<Item = &mut T> {
+        self.hits.iter_mut().map(|d| &mut d.doc)
     }
 
     /// Read-Only Access to the aggregations in the response
