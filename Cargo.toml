@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Ben Falk <benjamin.falk@yahoo.com>"
@@ -8,7 +8,7 @@ authors = [
 description = "An opinionated framework to work with Elasticsearch."
 license-file = "LICENSE.md"
 repository = "https://github.com/benfalk/elastic_lens"
-categories = ["framework"]
+categories = ["database"]
 keywords = ["elasticsearch"]
 readme = "README.md"
 

@@ -1,6 +1,6 @@
 use serde::de::{self, Deserializer, MapAccess, Visitor};
 use serde::Deserialize;
-use std::fmt;
+use std::fmt::{self, Debug};
 use std::marker::PhantomData;
 use std::time::Duration;
 
@@ -9,7 +9,6 @@ mod agg_result;
 pub use agg_result::*;
 
 /// The data that comes back from an Elasticsearch search
-#[derive(Debug, Clone)]
 pub struct SearchResults<T> {
     search_time: Duration,
     count: ResultCount,
@@ -18,6 +17,34 @@ pub struct SearchResults<T> {
     max_score: Option<f64>,
     hits: Vec<DocumentHit<T>>,
     aggs: AggResultCollection,
+}
+
+impl<T: Debug> Debug for SearchResults<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SearchResults")
+            .field("search_time", &self.search_time)
+            .field("count", &self.count)
+            .field("timed_out", &self.timed_out)
+            .field("shard_stats", &self.shard_stats)
+            .field("max_score", &self.max_score)
+            .field("hits", &self.hits)
+            .field("aggs", &self.aggs)
+            .finish()
+    }
+}
+
+impl<T: Clone> Clone for SearchResults<T> {
+    fn clone(&self) -> Self {
+        Self {
+            search_time: self.search_time,
+            count: self.count,
+            timed_out: self.timed_out,
+            shard_stats: self.shard_stats,
+            max_score: self.max_score,
+            hits: self.hits.clone(),
+            aggs: self.aggs.clone(),
+        }
+    }
 }
 
 impl<T> SearchResults<T> {
@@ -95,7 +122,7 @@ pub struct ShardStats {
 }
 
 /// wrapper for a document with details around it
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Deserialize)]
 pub struct DocumentHit<T> {
     /// Elasticsearch document ID
     #[serde(rename = "_id")]
@@ -120,9 +147,33 @@ pub struct DocumentHit<T> {
     pub doc: T,
 }
 
+impl<T: Debug> Debug for DocumentHit<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("DocumentHit")
+            .field("id", &self.id)
+            .field("index", &self.index)
+            .field("doc_type", &self.doc_type)
+            .field("score", &self.score)
+            .field("doc", &self.doc)
+            .finish()
+    }
+}
+
+impl<T: Clone> Clone for DocumentHit<T> {
+    fn clone(&self) -> Self {
+        Self {
+            id: self.id.clone(),
+            index: self.index.clone(),
+            doc_type: self.doc_type.clone(),
+            score: self.score,
+            doc: self.doc.clone(),
+        }
+    }
+}
+
 impl<'de, T> Deserialize<'de> for SearchResults<T>
 where
-    T: Deserialize<'de> + fmt::Debug + Clone,
+    T: Deserialize<'de>,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -200,7 +251,7 @@ where
         //
 
         #[derive(Deserialize)]
-        struct Hits<T: Clone + fmt::Debug> {
+        struct Hits<T> {
             total: ResultCount,
             max_score: Option<f64>,
             hits: Vec<DocumentHit<T>>,
@@ -217,7 +268,7 @@ where
             "status",
         ];
 
-        impl<'de, T: Clone + fmt::Debug + Deserialize<'de>> Visitor<'de> for ResultsVistor<T> {
+        impl<'de, T: Deserialize<'de>> Visitor<'de> for ResultsVistor<T> {
             type Value = SearchResults<T>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

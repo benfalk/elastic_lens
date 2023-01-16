@@ -244,3 +244,22 @@ pub mod five_cheapest {
         Ok(client.search(&search).await?)
     }
 }
+
+pub mod without_clone_or_debug {
+    use crate::create_client::create_client;
+    use elastic_lens::{prelude::*, response::SearchResults, Error};
+    use serde::Deserialize;
+
+    #[derive(Deserialize)]
+    pub struct User {
+        name: String,
+    }
+
+    pub async fn top_five_users() -> Result<SearchResults<User>, Error> {
+        let client = create_client()?;
+        let mut search = Search::default();
+        search.sort(by_field("score").descending().with_missing_values_last());
+        search.set_limit(5);
+        Ok(client.search(&search).await?)
+    }
+}
