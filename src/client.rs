@@ -80,7 +80,7 @@ impl<T: ClientAdapter> Client<T> {
     /// Execute a Search
     pub async fn search<D>(&self, search: &impl SearchTrait) -> ClientResult<SearchResults<D>>
     where
-        D: DeserializeOwned + Clone + std::fmt::Debug,
+        D: DeserializeOwned,
     {
         let mut body = search.search_body();
         body.apply_defaults(&self.settings);
