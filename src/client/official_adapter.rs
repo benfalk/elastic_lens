@@ -15,7 +15,7 @@ use serde::Serialize;
 
 mod util;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ElasticsearchAdapter {
     es_client: Elasticsearch,
     settings: Settings,

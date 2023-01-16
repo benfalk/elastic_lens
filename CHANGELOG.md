@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2023-01-16
+
+### Added
+
+- `hits_mut()` and `docs_mut()` mutable iterators to search results
+- `hits_take()` and `docs_take()` to extract collections from results
+- Make offical adapter clone-able so the client can also be cloned
+
 ## [0.1.2] - 2023-01-16
 
 ### Removed
