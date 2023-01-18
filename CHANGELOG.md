@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2023-01-17
+
+### Added
+
+- `Cow<'static, str>` can now be coerced to a `ScalarValue` directly.
+- `u8`, `u16`, `u32`, `i32`, `i16`, `i8` are now coerced to `ScalarValue`
+- `f32` is now coerced to `ScalarValue`
+
 ## [0.1.3] - 2023-01-16
 
 ### Added
