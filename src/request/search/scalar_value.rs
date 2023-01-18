@@ -30,9 +30,57 @@ impl From<String> for ScalarValue {
     }
 }
 
+impl From<Cow<'static, str>> for ScalarValue {
+    fn from(value: Cow<'static, str>) -> Self {
+        Self::Text(value)
+    }
+}
+
+impl From<f32> for ScalarValue {
+    fn from(value: f32) -> Self {
+        Self::Float(value as f64)
+    }
+}
+
 impl From<f64> for ScalarValue {
     fn from(value: f64) -> Self {
         Self::Float(value)
+    }
+}
+
+impl From<u8> for ScalarValue {
+    fn from(value: u8) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
+impl From<u16> for ScalarValue {
+    fn from(value: u16) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
+impl From<u32> for ScalarValue {
+    fn from(value: u32) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
+impl From<i32> for ScalarValue {
+    fn from(value: i32) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
+impl From<i16> for ScalarValue {
+    fn from(value: i16) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
+impl From<i8> for ScalarValue {
+    fn from(value: i8) -> Self {
+        Self::Integer(value as i64)
     }
 }
 
