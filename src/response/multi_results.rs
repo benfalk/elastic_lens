@@ -9,6 +9,17 @@ pub struct MultiResponse<T> {
     responses: Vec<SearchResults<T>>,
 }
 
+impl<T> MultiResponse<T> {
+    /// Retruns the actual data `MultiResponse` was working
+    /// with; which is a vector of the search results.  In
+    /// some cases when you want to perform more ownership
+    /// based access on the data this is probably the best
+    /// way to get at it.
+    pub fn to_inner(self) -> Vec<SearchResults<T>> {
+        self.responses
+    }
+}
+
 impl<T> Index<usize> for MultiResponse<T> {
     type Output = SearchResults<T>;
 

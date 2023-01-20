@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2023-01-20
+
+### Added
+
+- Support to unwrap the `MultiResponse` structure down to it's underlying
+  vector of search result payloads.
+
 ## [0.1.5] - 2023-01-20
 
 ### Removed
