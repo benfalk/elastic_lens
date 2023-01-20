@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2023-01-20
+
+### Removed
+
+- Requirement for `Debug` and `Clone` for types `T` in `MultiResponse`
+  is no longer needed for `Client#multi_search` to return results.  Now
+  if the type `T` **does** implement both/either trait then `MultiResponse`
+  will also have that functionality.
+
 ## [0.1.4] - 2023-01-17
 
 ### Added
