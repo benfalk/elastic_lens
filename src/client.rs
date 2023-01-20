@@ -97,7 +97,7 @@ impl<T: ClientAdapter> Client<T> {
         search: impl Into<MultiSearch<'a>>,
     ) -> ClientResult<MultiResponse<D>>
     where
-        D: DeserializeOwned + Clone + std::fmt::Debug,
+        D: DeserializeOwned,
     {
         let data = self.adapter.multi_search(search.into()).await?;
         Ok(serde_json::from_str(&data)?)
