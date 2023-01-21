@@ -15,6 +15,12 @@ pub struct AllMatch {
     negative_criteria: Vec<Criterion>,
 }
 
+impl AllMatch {
+    pub(crate) fn has_data(&self) -> bool {
+        !(self.negative_criteria.is_empty() && self.positive_criteria.is_empty())
+    }
+}
+
 /// Selects if all criteria given select
 pub fn if_all_match<F>(mut func: F) -> AllMatch
 where

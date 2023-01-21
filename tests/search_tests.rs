@@ -638,3 +638,36 @@ fn building_a_search_with_a_script_sort_and_params() {
         })
     );
 }
+
+#[test]
+fn building_a_search_with_an_empty_all_match() {
+    use elastic_lens::request::search::AllMatch;
+
+    let mut search = Search::default();
+    let all = AllMatch::default();
+    search.with(all);
+
+    assert_eq!(search_to_json(search), json!({}));
+}
+
+#[test]
+fn building_a_search_with_an_empty_any_match() {
+    use elastic_lens::request::search::AnyMatch;
+
+    let mut search = Search::default();
+    let any = AnyMatch::default();
+    search.with(any);
+
+    assert_eq!(search_to_json(search), json!({}));
+}
+
+#[test]
+fn building_a_search_with_an_empty_not_all_match() {
+    use elastic_lens::request::search::NotAll;
+
+    let mut search = Search::default();
+    let not_all = NotAll::default();
+    search.with(not_all);
+
+    assert_eq!(search_to_json(search), json!({}));
+}
