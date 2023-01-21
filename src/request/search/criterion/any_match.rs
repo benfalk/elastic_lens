@@ -31,6 +31,10 @@ impl AnyMatch {
     pub fn add<C: Into<Criterion>>(&mut self, criterion: C) {
         self.criteria.push(criterion.into());
     }
+
+    pub(crate) fn has_data(&self) -> bool {
+        !self.criteria.is_empty()
+    }
 }
 
 impl Serialize for AnyMatch {

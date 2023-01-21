@@ -11,6 +11,12 @@ pub struct NotAll {
 }
 
 impl NotAll {
+    pub(crate) fn has_data(&self) -> bool {
+        !self.criteria.is_empty()
+    }
+}
+
+impl NotAll {
     /// Consumes a criterion and negates it
     pub fn single<C: Into<Criterion>>(criterion: C) -> Self {
         Self {

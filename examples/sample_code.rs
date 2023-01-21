@@ -252,6 +252,7 @@ pub mod without_clone_or_debug {
 
     #[derive(Deserialize)]
     pub struct User {
+        #[allow(dead_code)]
         name: String,
     }
 

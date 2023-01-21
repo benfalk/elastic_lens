@@ -52,6 +52,17 @@ pub enum Criterion {
     AllMatch(AllMatch),
 }
 
+impl Criterion {
+    pub(crate) fn is_usable(&self) -> bool {
+        match self {
+            Self::AllMatch(all) => all.has_data(),
+            Self::NotAll(not_all) => not_all.has_data(),
+            Self::AnyMatch(any) => any.has_data(),
+            _ => true,
+        }
+    }
+}
+
 impl Serialize for Criterion {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where

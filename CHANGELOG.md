@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.7] - 2023-01-2021
+
+### Fixed
+
+- Empty `bool` query building bug is fixed.  When attempting to build
+  a search if you apply an empty criteria set, such as an `AllMatch`
+  it would generate a malformed query where the `bool` node had an
+  empty filter.  Now criterion are checked before being applied to a
+  search to prevent this going forward.
+
 ## [0.1.6] - 2023-01-20
 
 ### Added

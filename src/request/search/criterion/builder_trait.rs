@@ -23,6 +23,9 @@ pub trait CriteriaBuilder: Sized {
     /// Having the provided condition
     fn with<SC: Into<SearchCondition>>(&mut self, condition: SC) {
         let condition = condition.into();
-        <Self::Bucket as BucketPlacer>::push(self, condition.criterion, condition.tag);
+
+        if condition.criterion.is_usable() {
+            <Self::Bucket as BucketPlacer>::push(self, condition.criterion, condition.tag);
+        }
     }
 }
