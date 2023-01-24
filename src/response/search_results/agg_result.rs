@@ -35,6 +35,21 @@ impl AggResult {
             Self::Filtered(agg) => agg.str_identifier(),
         }
     }
+
+    /// Each AggResult wraps a specific structured data type.
+    /// Use this to unwrap the underlying structure.  This
+    /// only works if you have ownership of the data; if you
+    /// don't you may want to look at `borrow_as` instead.
+    pub fn unwrap_as<T: AggResultData>(self) -> Result<T, AggAccessError> {
+        T::unwrap_inner(self)
+    }
+
+    /// Attempts to borrow a reference to the underlying data
+    /// structure of the `AggResult`.  This and `unwrap_inner`
+    /// are the only two ways to get at the data for use.
+    pub fn borrow_as<T: AggResultData>(&self) -> Result<&T, AggAccessError> {
+        T::borrow_agg_result(self)
+    }
 }
 
 /// Sanity Tag to ensure every aggregation

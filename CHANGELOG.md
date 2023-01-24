@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.7] - 2023-01-2021
+## [0.1.8] - 2023-01-24
+
+### Added
+
+- Ergonomic methods to `AggResult` that allow you to directly get at
+  the data the enum is wrapping.  Prior to this change you had to work
+  directly from the `AggResultCollection`; which may not always be the
+  case if you're attempting to pass individual results around to be
+  processedd by the the code that created the request for them w/o
+  passing the entire collection.
+
+## [0.1.7] - 2023-01-21
 
 ### Fixed
 
