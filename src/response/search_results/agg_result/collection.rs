@@ -40,12 +40,10 @@ impl AggResultCollection {
     /// Note this doesn't do any actual downcast but instead
     /// uses enum matching.
     pub fn get<T: AggResultData>(&self, name: &str) -> Result<&T, AggAccessError> {
-        let agg = self
-            .data
+        self.data
             .get(name)
-            .ok_or_else(|| AggAccessError::AggNotFound(name.to_owned()))?;
-
-        T::borrow_agg_result(agg)
+            .ok_or_else(|| AggAccessError::AggNotFound(name.to_owned()))?
+            .borrow_as()
     }
 
     /// Retrieves the aggregation by it's name and
@@ -57,12 +55,10 @@ impl AggResultCollection {
     /// Note this doesn't do any actual downcast but instead
     /// uses enum matching.
     pub fn take<T: AggResultData>(&mut self, name: &str) -> Result<T, AggAccessError> {
-        let agg = self
-            .data
+        self.data
             .remove(name)
-            .ok_or_else(|| AggAccessError::AggNotFound(name.to_owned()))?;
-
-        T::unwrap_inner(agg)
+            .ok_or_else(|| AggAccessError::AggNotFound(name.to_owned()))?
+            .unwrap_as()
     }
 }
 
