@@ -68,6 +68,7 @@ impl Serialize for TermFilter {
     {
         use serde::ser::SerializeMap;
 
+        #[allow(non_local_definitions)]
         impl Serialize for ValueType {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
             where

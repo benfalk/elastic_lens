@@ -215,6 +215,7 @@ where
         // Deserialize ResultCount
         //
 
+        #[allow(non_local_definitions)]
         impl<'de> Deserialize<'de> for ResultCount {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
