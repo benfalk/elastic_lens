@@ -9,13 +9,13 @@ pub struct Stats {
     pub count: usize,
 
     /// the minimum value found
-    pub min: f64,
+    pub min: Option<f64>,
 
     /// the maximum value found
-    pub max: f64,
+    pub max: Option<f64>,
 
     /// the average value found
-    pub avg: f64,
+    pub avg: Option<f64>,
 
     /// the sum total of all values
     pub sum: f64,
