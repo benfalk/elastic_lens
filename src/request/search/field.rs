@@ -37,6 +37,15 @@ impl Field {
             name: Cow::Borrowed(name),
         }
     }
+
+    /// Field Name
+    ///
+    /// Returns the string slice data representation of the
+    /// Elasticsearch field name.
+    ///
+    pub fn name(&self) -> &str {
+        self.name.as_ref()
+    }
 }
 
 impl Serialize for Field {
