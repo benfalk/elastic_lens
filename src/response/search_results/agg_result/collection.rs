@@ -76,6 +76,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
             NumbericTerms(String),
             Stats(String),
             Filter(String),
+            Skip,
         }
 
         impl<'de> Deserialize<'de> for KeyType {
@@ -103,16 +104,16 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                             Filtered::ES_KEY,
                         ];
 
-                        let (agg_type, name) = key
-                            .split_once('#')
-                            .ok_or_else(|| de::Error::custom("'#' missing to determine type"))?;
-
-                        match agg_type {
-                            StringTerms::ES_KEY => Ok(KeyType::StringTerms(name.to_owned())),
-                            NumericTerms::ES_KEY => Ok(KeyType::NumbericTerms(name.to_owned())),
-                            Stats::ES_KEY => Ok(KeyType::Stats(name.to_owned())),
-                            Filtered::ES_KEY => Ok(KeyType::Filter(name.to_owned())),
-                            unknown => Err(de::Error::unknown_variant(unknown, FIELDS)),
+                        if let Some((agg_type, name)) = key.split_once('#') {
+                            match agg_type {
+                                StringTerms::ES_KEY => Ok(KeyType::StringTerms(name.to_owned())),
+                                NumericTerms::ES_KEY => Ok(KeyType::NumbericTerms(name.to_owned())),
+                                Stats::ES_KEY => Ok(KeyType::Stats(name.to_owned())),
+                                Filtered::ES_KEY => Ok(KeyType::Filter(name.to_owned())),
+                                unknown => Err(de::Error::unknown_variant(unknown, FIELDS)),
+                            }
+                        } else {
+                            Ok(KeyType::Skip)
                         }
                     }
                 }
@@ -155,6 +156,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                             let agg: Filtered = map.next_value()?;
                             results.data.insert(name, agg.into());
                         }
+                        KeyType::Skip => (),
                     }
                 }
 
