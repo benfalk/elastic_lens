@@ -1,3 +1,6 @@
+# Ignore JetBrains files
+.idea/*
+
 /target
 /Cargo.lock
 
