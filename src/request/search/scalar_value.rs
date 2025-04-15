@@ -66,6 +66,12 @@ impl From<u32> for ScalarValue {
     }
 }
 
+impl From<u64> for ScalarValue {
+    fn from(value: u64) -> Self {
+        Self::Integer(value as i64)
+    }
+}
+
 impl From<i32> for ScalarValue {
     fn from(value: i32) -> Self {
         Self::Integer(value as i64)
