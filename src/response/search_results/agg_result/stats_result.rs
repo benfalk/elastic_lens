@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 /// Thes are numerical stats collected for a numeric field
 /// or calculation
-#[derive(Debug, Clone, Deserialize, Copy)]
+#[derive(Debug, Clone, Deserialize, Copy, Default)]
 pub struct Stats {
     /// the number of items counted for stats
     pub count: usize,
