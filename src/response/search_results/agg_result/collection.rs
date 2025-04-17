@@ -60,6 +60,27 @@ impl AggResultCollection {
             .ok_or_else(|| AggAccessError::AggNotFound(name.to_owned()))?
             .unwrap_as()
     }
+
+    /// Allows for iteration over every key and [AggResult].
+    pub fn iter(&self) -> impl Iterator<Item = (&String, &AggResult)> {
+        self.data.iter()
+    }
+
+    /// Provides an iterator over each key along with a mutable
+    /// reference to the key's [AggResult].
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&String, &mut AggResult)> {
+        self.data.iter_mut()
+    }
+
+    /// Determines if the collection has a key stored
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.data.contains_key(key)
+    }
+
+    /// Optimized iterator that returns the keys in sorted order
+    pub fn keys(&self) -> impl Iterator<Item = &String> {
+        self.data.keys()
+    }
 }
 
 impl<'de> Deserialize<'de> for AggResultCollection {
