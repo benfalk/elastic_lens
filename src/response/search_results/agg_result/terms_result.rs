@@ -8,7 +8,7 @@ pub type StringTerms = TermResults<String>;
 pub type NumericTerms = TermResults<i64>;
 
 /// Term Aggregation Results from Elasticsearch
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct TermResults<T> {
     /// unique term counts, this is not guaranteed
     /// to be all values, it will only be the top

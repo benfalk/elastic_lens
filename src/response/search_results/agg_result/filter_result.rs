@@ -2,7 +2,7 @@ use super::*;
 use serde::Deserialize;
 
 /// Results for a filtered aggregation
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct Filtered {
     /// number of documents that matched the filter
     #[serde(rename = "doc_count")]
