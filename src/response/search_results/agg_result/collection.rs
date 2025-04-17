@@ -81,6 +81,30 @@ impl AggResultCollection {
     pub fn keys(&self) -> impl Iterator<Item = &String> {
         self.data.keys()
     }
+
+    /// Inserts into the collection an aggregate, if the key already
+    /// had a value the replaced value is returned.
+    pub fn insert<K: Into<String>>(&mut self, key: K, agg: AggResult) -> Option<AggResult> {
+        self.data.insert(key.into(), agg)
+    }
+
+    /// Merges data from collection into host, replacing any data if an
+    /// existing key already contained data.
+    pub fn merge_over(&mut self, other: Self) {
+        for (key, agg) in other.data {
+            self.data.insert(key, agg);
+        }
+    }
+
+    /// Merges data from collection into host, skiping any data if the
+    /// host already has data for it.
+    pub fn merge_under(&mut self, other: Self) {
+        for (key, agg) in other.data {
+            if !self.contains_key(&key) {
+                self.data.insert(key, agg);
+            }
+        }
+    }
 }
 
 impl<'de> Deserialize<'de> for AggResultCollection {
