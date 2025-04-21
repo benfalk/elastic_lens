@@ -1,10 +1,12 @@
 use super::*;
-use serde::Serialize;
+use serde::{Serialize, Serializer};
+use std::collections::HashMap;
 
 /// A single bucket aggregation that narrows the
 /// set of documents to those that match a query
 #[derive(Debug, Clone, Serialize)]
 pub struct FilterAggregation {
+    #[serde(serialize_with = "serialize_allmatch_for_filter")]
     #[serde(rename = "filter")]
     query: AllMatch,
 
@@ -40,3 +42,19 @@ impl From<FilterAggregation> for Aggregation {
 }
 
 impl AggregationData for FilterAggregation {}
+
+fn serialize_allmatch_for_filter<S>(allmatch: &AllMatch, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    #[derive(Debug, Default, Serialize)]
+    struct EmptyBool {
+        bool: HashMap<(), ()>,
+    }
+
+    if allmatch.has_data() {
+        allmatch.serialize(serializer)
+    } else {
+        EmptyBool::default().serialize(serializer)
+    }
+}

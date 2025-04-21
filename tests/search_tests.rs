@@ -671,3 +671,22 @@ fn building_a_search_with_an_empty_not_all_match() {
 
     assert_eq!(search_to_json(search), json!({}));
 }
+
+#[test]
+fn building_an_empty_filter_aggregate() {
+    let mut search = Search::default();
+    // do nothing to the filter
+    search.create_aggregation("test").filtered_by(|_| ());
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "aggs": {
+                "test": {
+                    "filter": {
+                        "bool": {}
+                    }
+                }
+            }
+        })
+    );
+}
