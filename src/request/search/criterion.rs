@@ -6,6 +6,7 @@ mod any_match;
 mod builder_trait;
 mod exists_filter;
 mod geo_distance_filter;
+mod nested;
 mod not_all;
 mod range_filter;
 mod term_filter;
@@ -15,6 +16,7 @@ pub use any_match::*;
 pub use builder_trait::*;
 pub use exists_filter::*;
 pub use geo_distance_filter::*;
+pub use nested::*;
 pub use not_all::*;
 pub use range_filter::*;
 pub use term_filter::*;
@@ -50,6 +52,9 @@ pub enum Criterion {
     /// selects if all conditions are true, optimized to put
     /// not conditions together in a similar bucket
     AllMatch(AllMatch),
+
+    /// sub-query designed to filter nested structures
+    Nested(NestedFilter),
 }
 
 impl Criterion {
@@ -58,6 +63,7 @@ impl Criterion {
             Self::AllMatch(all) => all.has_data(),
             Self::NotAll(not_all) => not_all.has_data(),
             Self::AnyMatch(any) => any.has_data(),
+            Self::Nested(query) => query.has_data(),
             _ => true,
         }
     }
@@ -76,6 +82,7 @@ impl Serialize for Criterion {
             Self::AnyMatch(filters) => filters.serialize(serializer),
             Self::NotAll(filters) => filters.serialize(serializer),
             Self::AllMatch(filters) => filters.serialize(serializer),
+            Self::Nested(filters) => filters.serialize(serializer),
         }
     }
 }
