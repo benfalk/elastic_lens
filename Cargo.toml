@@ -16,7 +16,7 @@ readme = "README.md"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
-thiserror = { version = "1.0" }
+thiserror = { version = "2.0" }
 async-trait = { version = "0.1" }
 arraystring = { version = "0.3.0" }
 elastic_lens_offical_es7 = { version = "7", optional = true }
@@ -59,6 +59,10 @@ path = "examples/simple_sort.rs"
 [[example]]
 name = "script_sort"
 path = "examples/script_sort.rs"
+
+[[example]]
+name = "nested_filter"
+path = "examples/nested_filter.rs"
 
 # To avoid repeating the same model over and
 # over between examples this serves as a shared

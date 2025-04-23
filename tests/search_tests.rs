@@ -690,3 +690,36 @@ fn building_an_empty_filter_aggregate() {
         })
     );
 }
+
+#[test]
+fn building_a_nested_filter() {
+    let mut search = Search::default();
+    search.with(nested("product.variants", |nested| {
+        nested.with(field("product.variants.size").contains("M"));
+        nested.with(field("product.variants.color").has_any_of(["blue", "red"]));
+    }));
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "nested": {
+                                "path": "product.variants",
+                                "query": {
+                                    "bool": {
+                                        "filter": [
+                                            { "term": { "product.variants.size": "M" } },
+                                            { "terms": { "product.variants.color": ["blue", "red"] } },
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        })
+    );
+}

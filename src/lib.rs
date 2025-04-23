@@ -38,7 +38,7 @@ pub use errors::*;
 pub mod prelude {
     pub use crate::client::Client;
     pub use crate::request::search::{
-        by_field, by_script, field, if_all_match, if_any_match, AggregationBuilder,
+        by_field, by_script, field, if_all_match, if_any_match, nested, AggregationBuilder,
         CriteriaBuilder, IntoGeoPoint, Search, SortBuilderTrait, SubAggregationBuilder,
     };
     pub use crate::request::MultiSearch;

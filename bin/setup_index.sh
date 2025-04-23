@@ -39,9 +39,9 @@ curl -XPOST -H "Content-Type: application/x-ndjson" http://localhost:9200/_bulk 
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "3" } }
 { "category": "clothing", "sub_category": "belt", "active": true, "cost": 1800, "vendors": [{"slug":"kmart", "country":"usa"}, {"slug":"walmart", "country":"usa"}] }
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "4" } }
-{ "category": "clothing", "sub_category": "beanie", "active": false, "cost": 1100, "vendors": [{"slug":"kmart", "country":"ca"}, {"slug":"walmart", "country":"ca"}] }
+{ "category": "clothing", "sub_category": "beanie", "active": false, "cost": 1100, "vendors": [{"slug":"kmart", "country":"ca"}, {"slug":"walmart", "country":"usa"}] }
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "5" } }
 { "category": "office", "sub_category": "pen", "active": true, "cost": 120, "vendors": [{"slug":"kmart", "country":"usa"}, {"slug":"walmart", "country":"usa"}] }
 { "index": { "_index": "inventory", "_type": "_doc", "_id": "6" } }
-{ "category": "office", "sub_category": "paper", "active": true, "cost": 500, "vendors": [{"slug":"korte", "country":"de"}, {"slug":"walle", "country":"fr"}] }
+{ "category": "office", "sub_category": "paper", "active": true, "cost": 500, "vendors": [{"slug":"kmart", "country":"usa"}, {"slug":"walle", "country":"ca"}] }
 '
