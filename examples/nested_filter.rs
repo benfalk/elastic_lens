@@ -13,7 +13,7 @@ async fn main() -> Result<(), Error> {
 
     let mut search = Search::default();
 
-    // Find inventory sold at the illusive Canadian K-Mart
+    // Find inventory sold at the elusive Canadian K-Mart
     search.with(nested(VENDORS, |criteria| {
         criteria.with(VENDOR_SLUG.contains("kmart"));
         criteria.with(VENDOR_COUNTRY.contains("ca"));
