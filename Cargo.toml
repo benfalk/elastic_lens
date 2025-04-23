@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.2.6"
+version = "0.3.0"
 edition = "2021"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 description = "An opinionated framework to work with Elasticsearch."
