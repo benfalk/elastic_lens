@@ -9,6 +9,7 @@ pub_field!(VENDORS, "vendors");
 pub_field!(VENDOR_SLUG, "vendors.slug");
 pub_field!(VENDOR_COUNTRY, "vendors.country");
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, Clone)]
 pub struct InventoryItem {
     pub category: String,
