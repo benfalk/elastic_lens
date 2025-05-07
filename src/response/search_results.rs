@@ -99,7 +99,7 @@ impl<T> SearchResults<T> {
         self.hits
             .drain(..)
             .map(|h| h.doc)
-            .rfold(Vec::with_capacity(capacity), |mut docs, doc| {
+            .fold(Vec::with_capacity(capacity), |mut docs, doc| {
                 docs.push(doc);
                 docs
             })
