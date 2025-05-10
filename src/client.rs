@@ -12,12 +12,14 @@ mod builder;
 mod official_adapter;
 mod settings;
 
+use std::borrow::{Borrow, Cow};
+
 pub use adapter::*;
 pub use builder::*;
 pub use settings::*;
 
 use crate::{
-    request::{search::SearchTrait, MultiSearch},
+    request::{search::SearchTrait, MultiSearch, ScrollCursor, ScrollSearch},
     response::{MultiResponse, SearchResults},
 };
 use serde::de::DeserializeOwned;
@@ -39,6 +41,11 @@ pub enum ClientError {
     /// If the document cannot be deserialzed
     #[error("Client Deserialize Error: {0}")]
     Deserialize(#[from] serde_json::Error),
+
+    /// If an expected scroll ID is missing while making a
+    /// call to [Client::scroll] or [Client::scroll_search]
+    #[error("Missing Scroll ID")]
+    MissingScrollId,
 }
 
 /// Passes requests to the Elasticsearch server it has been configured
@@ -101,5 +108,45 @@ impl<T: ClientAdapter> Client<T> {
     {
         let data = self.adapter.multi_search(search.into()).await?;
         Ok(serde_json::from_str(&data)?)
+    }
+
+    /// Start a search that allows you to fetch
+    /// all of the results.  This returns a tuple
+    /// with the [ScrollCursor] first and the
+    /// [SearchResults] second.  The cursor is used
+    /// with [Client::scroll] to fetch additional
+    /// results.
+    pub async fn scroll_search<D>(
+        &self,
+        search: &impl SearchTrait,
+    ) -> ClientResult<(ScrollCursor, SearchResults<D>)>
+    where
+        D: DeserializeOwned,
+    {
+        let duration = "1m";
+        let scroll = ScrollSearch::new_with_duration(search, duration);
+        let data = self.adapter.scroll_search(scroll).await?;
+        let mut results: SearchResults<D> = serde_json::from_str(&data)?;
+        let cursor = ScrollCursor {
+            scroll_id: results
+                .take_scroll_id()
+                .ok_or_else(|| ClientError::MissingScrollId)?,
+            scroll: duration.into(),
+        };
+        Ok((cursor, results))
+    }
+
+    /// Fetch another page of results from a [ScrollCursor]
+    /// that was started by [Client::scroll_search].
+    pub async fn scroll<D>(&self, scroll: &mut ScrollCursor) -> ClientResult<SearchResults<D>>
+    where
+        D: DeserializeOwned,
+    {
+        let data = self.adapter.scroll(scroll).await?;
+        let mut results: SearchResults<D> = serde_json::from_str(&data)?;
+        scroll.scroll_id = results
+            .take_scroll_id()
+            .ok_or_else(|| ClientError::MissingScrollId)?;
+        Ok(results)
     }
 }

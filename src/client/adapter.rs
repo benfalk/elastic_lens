@@ -1,5 +1,5 @@
 use super::*;
-use crate::request::MultiSearch;
+use crate::request::{MultiSearch, ScrollCursor, ScrollSearch};
 use serde::Serialize;
 
 /// Every error that can be emmited by an adapter
@@ -39,6 +39,12 @@ pub trait ClientAdapter: private::SealedClientAdapter {
     /// Performs multiple searches at once
     async fn multi_search<'a>(&self, mut searches: MultiSearch<'a>)
         -> Result<String, AdapterError>;
+
+    /// Starts a scroll search
+    async fn scroll_search<'a>(&self, search: ScrollSearch<'a>) -> Result<String, AdapterError>;
+
+    /// Continues a scroll search
+    async fn scroll(&self, cursor: &ScrollCursor) -> Result<String, AdapterError>;
 }
 
 mod private {

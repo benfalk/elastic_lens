@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 description = "An opinionated framework to work with Elasticsearch."
@@ -63,6 +63,10 @@ path = "examples/script_sort.rs"
 [[example]]
 name = "nested_filter"
 path = "examples/nested_filter.rs"
+
+[[example]]
+name = "scroll_search"
+path = "examples/scroll_search.rs"
 
 # To avoid repeating the same model over and
 # over between examples this serves as a shared

@@ -1,5 +1,5 @@
 use super::*;
-use crate::request::MultiSearch;
+use crate::request::{MultiSearch, ScrollCursor};
 
 #[cfg(feature = "es_7")]
 use elastic_lens_offical_es7::elasticsearch;
@@ -132,6 +132,64 @@ impl ClientAdapter for ElasticsearchAdapter {
             .msearch(parts)
             .body(util::multisearch_to_body(search))
             .typed_keys(true)
+            .send()
+            .await?;
+
+        match response.status_code().as_u16() {
+            200 => Ok(response.text().await?),
+            code => Err(AdapterError::Internal(format!(
+                "[{code}]: {}",
+                response.text().await?
+            ))),
+        }
+    }
+
+    async fn scroll_search<'a>(
+        &self,
+        search: crate::request::ScrollSearch<'a>,
+    ) -> Result<String, AdapterError> {
+        use elasticsearch::SearchParts;
+
+        let index = [self.settings.index.as_str()];
+
+        #[cfg(feature = "es_7")]
+        let mut doc = [""];
+
+        #[cfg(feature = "es_7")]
+        let parts = if let Some(doc_type) = self.settings.doc_type.as_ref() {
+            doc[0] = doc_type.as_str();
+            SearchParts::IndexType(&index, &doc)
+        } else {
+            SearchParts::Index(&index)
+        };
+
+        #[cfg(feature = "es_8")]
+        let parts = SearchParts::Index(&index);
+
+        let response = self
+            .es_client
+            .search(parts)
+            .body(search.search_body)
+            .scroll(search.duration.as_ref())
+            .typed_keys(true)
+            .send()
+            .await?;
+
+        match response.status_code().as_u16() {
+            200 => Ok(response.text().await?),
+            code => Err(AdapterError::Internal(format!(
+                "[{code}]: {}",
+                response.text().await?
+            ))),
+        }
+    }
+
+    async fn scroll(&self, cursor: &ScrollCursor) -> Result<String, AdapterError> {
+        let response = self
+            .es_client
+            .scroll(elasticsearch::ScrollParts::None)
+            .scroll_id(&cursor.scroll_id)
+            .scroll(&cursor.scroll)
             .send()
             .await?;
 
