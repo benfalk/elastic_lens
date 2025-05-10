@@ -17,6 +17,7 @@ pub struct SearchResults<T> {
     max_score: Option<f64>,
     hits: Vec<DocumentHit<T>>,
     aggs: AggResultCollection,
+    scroll_id: Option<String>,
 }
 
 impl<T: Debug> Debug for SearchResults<T> {
@@ -43,6 +44,7 @@ impl<T: Clone> Clone for SearchResults<T> {
             max_score: self.max_score,
             hits: self.hits.clone(),
             aggs: self.aggs.clone(),
+            scroll_id: self.scroll_id.clone(),
         }
     }
 }
@@ -125,6 +127,11 @@ impl<T> SearchResults<T> {
     /// results because you don't need the rest of the results.
     pub fn aggs_mut(&mut self) -> &mut AggResultCollection {
         &mut self.aggs
+    }
+
+    #[doc(hidden)]
+    pub(crate) fn take_scroll_id(&mut self) -> Option<String> {
+        self.scroll_id.take()
     }
 }
 
@@ -291,13 +298,14 @@ where
 
         struct ResultsVistor<T>(PhantomData<T>);
 
-        const FIELDS: &[&str; 6] = &[
+        const FIELDS: &[&str; 7] = &[
             "hits",
             "aggregations",
             "took",
             "timed_out",
             "_shards",
             "status",
+            "_scroll_id",
         ];
 
         impl<'de, T: Deserialize<'de>> Visitor<'de> for ResultsVistor<T> {
@@ -316,6 +324,7 @@ where
                 let mut timed_out: Option<bool> = None;
                 let mut took: Option<Duration> = None;
                 let mut aggs: Option<AggResultCollection> = None;
+                let mut scroll_id: Option<String> = None;
 
                 while let Some(key) = map.next_key()? {
                     match key {
@@ -333,6 +342,9 @@ where
                         }
                         "aggregations" => {
                             aggs = Some(map.next_value()?);
+                        }
+                        "_scroll_id" => {
+                            scroll_id = Some(map.next_value()?);
                         }
                         // TODO: This wires up msearch to get it working as each
                         //       result has a status in this case... but in the
@@ -366,6 +378,7 @@ where
                     shard_stats,
                     hits: hits.hits,
                     aggs,
+                    scroll_id,
                 })
             }
         }

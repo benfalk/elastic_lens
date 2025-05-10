@@ -296,11 +296,12 @@ pub async fn less_than_20_report() -> Result<Filtered, Error> {
 
 You'll need Elasticsearch running on port 9200. You can run it dockerized with:
 
-```
+```bash
 docker run -it -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.11.2
 ```
 
-Then, run `bin/setup_index.sh` to bootstrap some data that the examples will query against.
+Then, run `bin/setup_index.sh` to bootstrap some data that the
+examples will query against.
 
 The examples are found in the `examples/` directory and can be
 run with cargo: `cargo run --example <name> (..args..)`  Here is
@@ -312,3 +313,5 @@ current list of examples:
 - `filter_aggs`
 - `multi_search`
 - `simple_sort`
+- `nested_filter`
+- `scroll_search`
