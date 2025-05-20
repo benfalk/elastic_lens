@@ -6,14 +6,18 @@ mod direction;
 mod field_params;
 mod geo_params;
 mod missing_value;
+mod script_params;
 mod script_score;
+mod script_sort;
 
 pub use builder_trait::*;
 pub use direction::*;
 pub use field_params::*;
 pub use geo_params::*;
 pub use missing_value::*;
+pub use script_params::*;
 pub use script_score::*;
+pub use script_sort::*;
 
 /// Describes a way to sort documents from a search
 #[derive(Debug, Clone)]
@@ -26,6 +30,9 @@ pub enum SortDirective {
 
     /// When sorting with a script score
     ScriptScore(ScriptScoreData),
+
+    /// When sorting with a script
+    ScriptSort(ScriptSort),
 }
 
 impl SortDirective {
@@ -47,6 +54,7 @@ impl Serialize for SortDirective {
             Self::Field(params) => params.serialize(serializer),
             Self::GeoDistance(params) => params.serialize(serializer),
             Self::ScriptScore(params) => params.serialize(serializer),
+            Self::ScriptSort(params) => params.serialize(serializer),
         }
     }
 }

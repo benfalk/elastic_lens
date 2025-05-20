@@ -11,7 +11,7 @@ async fn main() -> Result<(), Error> {
         .index("inventory")
         .build()?;
 
-    let script_sort = by_script(
+    let script_score = by_script_score(
         r#"
             if ( doc['cost'].value > params.breakpoint ) {
                 doc['cost'].value / 100
@@ -20,12 +20,11 @@ async fn main() -> Result<(), Error> {
             }
         "#,
     )
-    .with_params([("breakpoint", 1300)])
-    .returns_a_number()
-    .ascending();
+    .with_params([("breakpoint", 1300)]);
 
     let mut search = Search::default();
-    search.sort(script_sort);
+    search.sort(script_score);
+    search.with(!SUB_CATEGORY.contains("beanie"));
     let mut results = client.search::<InventoryItem>(&search).await?;
     let docs = results.docs_take();
     assert!(!docs.is_empty());

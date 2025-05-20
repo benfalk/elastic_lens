@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 description = "An opinionated framework to work with Elasticsearch."
@@ -55,6 +55,10 @@ path = "examples/multi_search.rs"
 [[example]]
 name = "simple_sort"
 path = "examples/simple_sort.rs"
+
+[[example]]
+name = "script_score"
+path = "examples/script_score.rs"
 
 [[example]]
 name = "script_sort"

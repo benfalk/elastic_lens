@@ -212,7 +212,7 @@ pub mod script_sort {
         search.with(!SUB_CATEGORY.contains("beanie"));
 
         search.sort(
-            by_script(
+            by_script_score(
                 r#"
                   if ( doc['cost'].value > params.breakpoint ) {
                       doc['cost'].value / 100
