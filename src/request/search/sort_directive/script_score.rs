@@ -17,7 +17,7 @@ pub struct ScriptScoreData {
     pub(super) params: ScriptParams,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(super) direction: Option<SortDirection>,
+    pub(super) order: Option<SortDirection>,
 }
 
 impl ScriptScoreData {
@@ -26,7 +26,7 @@ impl ScriptScoreData {
         Self {
             script: script.into(),
             params: ScriptParams::default(),
-            direction: None,
+            order: None,
         }
     }
 
@@ -38,7 +38,7 @@ impl ScriptScoreData {
         Self {
             params,
             script: script.into(),
-            direction: None,
+            order: None,
         }
     }
 }
