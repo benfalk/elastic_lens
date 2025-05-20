@@ -57,6 +57,10 @@ name = "simple_sort"
 path = "examples/simple_sort.rs"
 
 [[example]]
+name = "script_score"
+path = "examples/script_score.rs"
+
+[[example]]
 name = "script_sort"
 path = "examples/script_sort.rs"
 
