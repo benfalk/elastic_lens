@@ -28,7 +28,7 @@ impl ScriptScoreBuilder {
     }
 
     /// Sort the script ascending
-    pub fn sort_ascending(self) -> Self {
+    pub fn ascending(self) -> Self {
         Self {
             direction: Some(SortDirection::Ascending),
             ..self
@@ -36,7 +36,7 @@ impl ScriptScoreBuilder {
     }
 
     /// Sort the script descending
-    pub fn sort_decending(self) -> Self {
+    pub fn decending(self) -> Self {
         Self {
             direction: Some(SortDirection::Descending),
             ..self

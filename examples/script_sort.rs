@@ -23,10 +23,10 @@ async fn main() -> Result<(), Error> {
     .with_params([("breakpoint", 1300)]);
 
     let mut decending_search = Search::default();
-    decending_search.sort(script_sort.clone().sort_decending());
+    decending_search.sort(script_sort.clone().decending());
 
     let mut ascending_search = Search::default();
-    decending_search.sort(script_sort.sort_ascending());
+    decending_search.sort(script_sort.ascending());
 
     let mut decending = client.search::<InventoryItem>(&decending_search).await?;
     let mut ascending = client.search::<InventoryItem>(&ascending_search).await?;
