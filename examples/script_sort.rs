@@ -35,7 +35,7 @@ async fn main() -> Result<(), Error> {
     let mut decending_docs = decending.docs_take();
     decending_docs.reverse();
 
+    assert!(!decending_docs.is_empty());
     assert_eq!(acending_docs, decending_docs);
-
     Ok(())
 }
