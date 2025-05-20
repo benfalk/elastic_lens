@@ -6,6 +6,7 @@ use std::borrow::Cow;
 pub struct ScriptScoreBuilder {
     script: Cow<'static, str>,
     params: Option<ScriptParams>,
+    direction: Option<SortDirection>,
 }
 
 impl ScriptScoreBuilder {
@@ -14,6 +15,7 @@ impl ScriptScoreBuilder {
         Self {
             script: script.into(),
             params: None,
+            direction: None,
         }
     }
 
@@ -25,11 +27,28 @@ impl ScriptScoreBuilder {
         }
     }
 
+    /// Sort the script ascending
+    pub fn sort_ascending(self) -> Self {
+        Self {
+            direction: Some(SortDirection::Ascending),
+            ..self
+        }
+    }
+
+    /// Sort the script descending
+    pub fn sort_decending(self) -> Self {
+        Self {
+            direction: Some(SortDirection::Descending),
+            ..self
+        }
+    }
+
     /// Create a new script-score
     pub fn build(self) -> ScriptScoreData {
         ScriptScoreData {
             script: self.script,
             params: self.params.unwrap_or_default(),
+            direction: self.direction,
         }
     }
 }

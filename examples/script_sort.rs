@@ -11,30 +11,31 @@ async fn main() -> Result<(), Error> {
         .index("inventory")
         .build()?;
 
-    let mut search = Search::default();
+    let script_sort = by_script(
+        r#"
+            if ( doc['cost'].value > params.breakpoint ) {
+                doc['cost'].value / 100
+            } else {
+                doc['cost'].value * 100
+            }
+        "#,
+    )
+    .with_params([("breakpoint", 1300)]);
 
-    search.with(!SUB_CATEGORY.contains("beanie"));
+    let mut decending_search = Search::default();
+    decending_search.sort(script_sort.clone().sort_decending());
 
-    search.sort(
-        by_script(
-            r#"
-              if ( doc['cost'].value > params.breakpoint ) {
-                  doc['cost'].value / 100
-              } else {
-                  doc['cost'].value * 100
-              }
-            "#,
-        )
-        .with_params([("breakpoint", 1300)]),
-    );
+    let mut ascending_search = Search::default();
+    decending_search.sort(script_sort.sort_ascending());
 
-    let results = client.search::<InventoryItem>(&search).await?;
+    let mut decending = client.search::<InventoryItem>(&decending_search).await?;
+    let mut ascending = client.search::<InventoryItem>(&ascending_search).await?;
 
-    println!("{:?}", results.count());
+    let acending_docs = ascending.docs_take();
+    let mut decending_docs = decending.docs_take();
+    decending_docs.reverse();
 
-    for doc in results.docs() {
-        println!("{doc:?}");
-    }
+    assert_eq!(acending_docs, decending_docs);
 
     Ok(())
 }
