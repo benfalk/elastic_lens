@@ -12,8 +12,12 @@ pub use params::*;
 pub struct ScriptScoreData {
     #[serde(rename = "source")]
     pub(super) script: Cow<'static, str>,
+
     #[serde(skip_serializing_if = "ScriptParams::is_empty")]
     pub(super) params: ScriptParams,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(super) direction: Option<SortDirection>,
 }
 
 impl ScriptScoreData {
@@ -22,6 +26,7 @@ impl ScriptScoreData {
         Self {
             script: script.into(),
             params: ScriptParams::default(),
+            direction: None,
         }
     }
 
@@ -33,6 +38,7 @@ impl ScriptScoreData {
         Self {
             params,
             script: script.into(),
+            direction: None,
         }
     }
 }

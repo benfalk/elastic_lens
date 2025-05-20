@@ -9,7 +9,7 @@ pub_field!(VENDORS, "vendors");
 pub_field!(VENDOR_SLUG, "vendors.slug");
 pub_field!(VENDOR_COUNTRY, "vendors.country");
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq)]
 pub struct InventoryItem {
     pub category: String,
     pub sub_category: String,
@@ -18,7 +18,7 @@ pub struct InventoryItem {
     pub vendors: Vec<Vendor>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq)]
 pub struct Vendor {
     pub slug: String,
     pub country: String,
