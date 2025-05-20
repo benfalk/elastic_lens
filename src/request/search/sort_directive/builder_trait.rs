@@ -4,11 +4,13 @@ use std::borrow::Cow;
 mod field_sort_builder;
 mod field_sort_builder_options;
 mod geo_distance_sort_builder;
+mod script_score_builder;
 mod script_sort_builder;
 
 pub use field_sort_builder::*;
 pub use field_sort_builder_options::*;
 pub use geo_distance_sort_builder::*;
+pub use script_score_builder::*;
 pub use script_sort_builder::*;
 
 /// Use a field to sort by, this can be just the field in a
@@ -20,8 +22,13 @@ pub fn by_field<F: Into<Field>>(field: F) -> FieldSortBuilder {
 }
 
 /// Use to sort by a script-score.
-pub fn by_script<S: Into<Cow<'static, str>>>(script: S) -> ScriptScoreBuilder {
+pub fn by_script_score<S: Into<Cow<'static, str>>>(script: S) -> ScriptScoreBuilder {
     ScriptScoreBuilder::new(script)
+}
+
+/// Use to sort by a script
+pub fn by_script<S: Into<Cow<'static, str>>>(script: S) -> ScriptSortBuilder {
+    ScriptSortBuilder::new(script)
 }
 
 /// Trait used to provide self-sort construction

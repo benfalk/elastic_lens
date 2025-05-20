@@ -581,11 +581,66 @@ fn building_a_search_with_a_normal_field_sort_and_missing_value() {
 }
 
 #[test]
-fn building_a_search_with_a_script_sort() {
+fn building_a_script_sort() {
+    let mut search = Search::default();
+    search.with(field("user.role").contains("admin"));
+    search.sort(by_script("doc['my-int'].value / 10"));
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "term": { "user.role": "admin" } }
+                    ]
+                }
+            },
+            "sort": [
+                { "_script": {
+                    "script": {
+                        "source": "doc['my-int'].value / 10"
+                    },
+                    "type": "number"
+                } }
+            ]
+        })
+    );
+}
+
+#[test]
+fn building_a_script_sort_with_bells_and_whistles() {
+    let mut search = Search::default();
+    search.sort(
+        by_script("roflcopter")
+            .returns_a_string()
+            .descending()
+            .with_params([("spice", 42)]),
+    );
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "sort": [
+                { "_script": {
+                    "script": {
+                        "source": "roflcopter",
+                        "params": {
+                            "spice": 42
+                        }
+                    },
+                    "type": "string",
+                    "order": "desc"
+                } }
+            ]
+        })
+    );
+}
+
+#[test]
+fn building_a_search_with_a_script_score() {
     let mut search = Search::default();
 
     search.with(field("user.role").contains("admin"));
-    search.sort(by_script("doc['my-int'].value / 10"));
+    search.sort(by_script_score("doc['my-int'].value / 10"));
 
     assert_eq!(
         search_to_json(search),
@@ -609,11 +664,13 @@ fn building_a_search_with_a_script_sort() {
 }
 
 #[test]
-fn building_a_search_with_a_script_sort_and_params() {
+fn building_a_search_with_a_script_score_and_params() {
     let mut search = Search::default();
 
     search.with(field("user.role").contains("admin"));
-    search.sort(by_script("doc['my-int'].value / 10 + params.spice").with_params([("spice", 42)]));
+    search.sort(
+        by_script_score("doc['my-int'].value / 10 + params.spice").with_params([("spice", 42)]),
+    );
 
     assert_eq!(
         search_to_json(search),
