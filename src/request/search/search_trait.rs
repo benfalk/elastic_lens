@@ -37,6 +37,11 @@ pub trait SearchTrait {
         None
     }
 
+    /// how should results be collapsed, if at all?
+    fn collapse_by(&self) -> Option<&CollapseBy> {
+        None
+    }
+
     /// Produces a structure that can be serialized into the body
     /// request for Elasticsearch.  This is a borrow from the trait
     /// and therefore locks modification while the body is around.

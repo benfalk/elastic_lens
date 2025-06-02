@@ -11,6 +11,7 @@ impl<'a, S: SearchTrait> From<&'a S> for SearchBody<'a> {
             query: determine_root(value),
             aggs: value.aggregations(),
             sort: determine_sorts(value),
+            collapse: value.collapse_by(),
         }
     }
 }
@@ -62,6 +63,9 @@ pub struct SearchBody<'a> {
 
     #[serde(skip_serializing_if = "SkipNode::not_needed")]
     sort: Option<&'a Vec<SortDirective>>,
+
+    #[serde(skip_serializing_if = "SkipNode::not_needed")]
+    collapse: Option<&'a CollapseBy>,
 }
 
 #[derive(Debug, Serialize)]

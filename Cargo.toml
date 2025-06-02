@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 description = "An opinionated framework to work with Elasticsearch."
@@ -71,6 +71,10 @@ path = "examples/nested_filter.rs"
 [[example]]
 name = "scroll_search"
 path = "examples/scroll_search.rs"
+
+[[example]]
+name = "collapse_by"
+path = "examples/collapse_by.rs"
 
 # To avoid repeating the same model over and
 # over between examples this serves as a shared

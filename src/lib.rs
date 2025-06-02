@@ -39,8 +39,8 @@ pub mod prelude {
     pub use crate::client::Client;
     pub use crate::request::search::{
         by_field, by_script, by_script_score, field, if_all_match, if_any_match, nested,
-        AggregationBuilder, CriteriaBuilder, IntoGeoPoint, Search, SortBuilderTrait,
-        SubAggregationBuilder,
+        AggregationBuilder, CollapseBuilderTrait, CriteriaBuilder, IntoGeoPoint, Search,
+        SortBuilderTrait, SubAggregationBuilder,
     };
     pub use crate::request::MultiSearch;
     pub use crate::response::{Filtered, NumericTerms, Stats, StringTerms};

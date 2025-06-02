@@ -6,6 +6,7 @@
 
 mod aggregation;
 mod body;
+mod collapsing;
 mod condition;
 mod criterion;
 mod field;
@@ -18,6 +19,7 @@ mod target;
 
 pub use aggregation::*;
 pub use body::*;
+pub use collapsing::*;
 pub use condition::*;
 pub use criterion::*;
 pub use field::*;
@@ -37,6 +39,7 @@ pub struct Search {
     aggregations: Option<AggCollection>,
     limit: Option<usize>,
     offset: Option<usize>,
+    collapse_by: Option<CollapseBy>,
 }
 
 impl Search {
@@ -87,6 +90,10 @@ impl SearchTrait for Search {
     fn aggregations(&self) -> Option<&AggCollection> {
         self.aggregations.as_ref()
     }
+
+    fn collapse_by(&self) -> Option<&CollapseBy> {
+        self.collapse_by.as_ref()
+    }
 }
 
 impl CriteriaBuilder for Search {
@@ -110,5 +117,11 @@ impl AggregationBuilder for Search {
 impl SortBuilderTrait for Search {
     fn sort_directives_mut(&mut self) -> &mut Vec<SortDirective> {
         &mut self.sorts
+    }
+}
+
+impl CollapseBuilderTrait for Search {
+    fn collapse_mut(&mut self) -> &mut Option<CollapseBy> {
+        &mut self.collapse_by
     }
 }
