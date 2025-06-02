@@ -139,3 +139,5 @@ jobs:
         run: cargo run --features=${{matrix.feature}} --example nested_filter
       - name: 'Example: scroll_search'
         run: cargo run --features=${{matrix.feature}} --example scroll_search
+      - name: 'Example: collapse_by'
+        run: cargo run --features=${{matrix.feature}} --example collapse_by

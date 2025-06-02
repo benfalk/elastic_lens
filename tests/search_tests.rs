@@ -780,3 +780,34 @@ fn building_a_nested_filter() {
         })
     );
 }
+
+#[test]
+fn collapse_by_field() {
+    let mut search = Search::default();
+    search.collapse_by_field("category");
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "collapse": {
+                "field": "category"
+            }
+        })
+    );
+}
+
+#[test]
+fn collapse_by_field_and_max_concurrent() {
+    let mut search = Search::default();
+    search
+        .collapse_by_field("category")
+        .max_concurrent_searches(6);
+    assert_eq!(
+        search_to_json(search),
+        json!({
+            "collapse": {
+                "field": "category",
+                "max_concurrent_group_searches": 6,
+            }
+        })
+    );
+}
