@@ -38,9 +38,11 @@ pub enum ClientError {
     #[error("{0}")]
     Adapter(#[from] AdapterError),
 
-    /// If the document cannot be deserialzed
+    /// If the document cannot be deserialzed you get
+    /// the underlying serde_json::Error as well as the
+    /// payload that could not be deserialized.
     #[error("Client Deserialize Error: {0}")]
-    Deserialize(#[from] serde_json::Error),
+    Deserialize(serde_json::Error, String),
 
     /// If an expected scroll ID is missing while making a
     /// call to [Client::scroll] or [Client::scroll_search]
@@ -76,7 +78,7 @@ impl<T: ClientAdapter> Client<T> {
 
         match self.adapter.get_by_id(id).await {
             Ok(data) => {
-                let single: SingleDocument<D> = serde_json::from_str(&data)?;
+                let single: SingleDocument<D> = deserialze(data)?;
                 Ok(single.doc)
             }
             Err(AdapterError::NotFound) => Ok(None),
@@ -93,7 +95,7 @@ impl<T: ClientAdapter> Client<T> {
         body.apply_defaults(&self.settings);
 
         match self.adapter.search(&body).await {
-            Ok(data) => Ok(serde_json::from_str(&data)?),
+            Ok(data) => Ok(deserialze(data)?),
             Err(other) => Err(ClientError::Adapter(other)),
         }
     }
@@ -107,7 +109,7 @@ impl<T: ClientAdapter> Client<T> {
         D: DeserializeOwned,
     {
         let data = self.adapter.multi_search(search.into()).await?;
-        Ok(serde_json::from_str(&data)?)
+        Ok(deserialze(data)?)
     }
 
     /// Start a search that allows you to fetch
@@ -126,7 +128,7 @@ impl<T: ClientAdapter> Client<T> {
         let duration = "1m";
         let scroll = ScrollSearch::new_with_duration(search, duration);
         let data = self.adapter.scroll_search(scroll).await?;
-        let mut results: SearchResults<D> = serde_json::from_str(&data)?;
+        let mut results: SearchResults<D> = deserialze(data)?;
         let cursor = ScrollCursor {
             scroll_id: results
                 .take_scroll_id()
@@ -143,10 +145,14 @@ impl<T: ClientAdapter> Client<T> {
         D: DeserializeOwned,
     {
         let data = self.adapter.scroll(scroll).await?;
-        let mut results: SearchResults<D> = serde_json::from_str(&data)?;
+        let mut results: SearchResults<D> = deserialze(data)?;
         scroll.scroll_id = results
             .take_scroll_id()
             .ok_or_else(|| ClientError::MissingScrollId)?;
         Ok(results)
     }
+}
+
+fn deserialze<T: DeserializeOwned>(data: String) -> ClientResult<T> {
+    serde_json::from_str(&data).map_err(|serde_err| ClientError::Deserialize(serde_err, data))
 }
