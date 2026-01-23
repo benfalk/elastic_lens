@@ -25,7 +25,7 @@ In your `Cargo.toml` file:
 # You must pick one of the currently two supported adapters
 # - "official_es7"
 # - "official_es8"
-elastic_lens = { version = "0.1.8", features = ["official_es7"] }
+elastic_lens = { version = "0.8.0", features = ["official_es7"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 ```
@@ -238,6 +238,27 @@ pub async fn category_aggs_with_sub_categories() -> Result<StringTerms, Error> {
 
     let mut results = client.search::<Value>(&search).await?;
     Ok(results.aggs_mut().take("categories")?)
+}
+```
+
+### Cardinality Aggregations
+
+```rust
+use elastic_lens::{prelude::*, Error};
+
+pub async fn category_count() -> Result<usize, Error> {
+  let client = create_client()?;
+    let mut search = Search::default();
+
+    search
+        .create_aggregation("unique-categories")
+        .for_field("category")
+        .count_cardinality()
+        .use_for_missing_value("unknown")
+        .with_precision_threshold(1000);
+
+    let mut results = client.search::<()>(&search).await?;
+    Ok(results.aggs_mut().take::<Cardinality>("unique-categories")?.count);
 }
 ```
 
