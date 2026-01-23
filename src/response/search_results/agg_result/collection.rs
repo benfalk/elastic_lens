@@ -121,6 +121,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
             NumbericTerms(String),
             Stats(String),
             Filter(String),
+            Cardinality(String),
             Skip,
         }
 
@@ -147,6 +148,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                             StringTerms::ES_KEY,
                             Stats::ES_KEY,
                             Filtered::ES_KEY,
+                            Cardinality::ES_KEY,
                         ];
 
                         if let Some((agg_type, name)) = key.split_once('#') {
@@ -155,6 +157,7 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                                 NumericTerms::ES_KEY => Ok(KeyType::NumbericTerms(name.to_owned())),
                                 Stats::ES_KEY => Ok(KeyType::Stats(name.to_owned())),
                                 Filtered::ES_KEY => Ok(KeyType::Filter(name.to_owned())),
+                                Cardinality::ES_KEY => Ok(KeyType::Cardinality(name.to_owned())),
                                 unknown => Err(de::Error::unknown_variant(unknown, FIELDS)),
                             }
                         } else {
@@ -199,6 +202,10 @@ impl<'de> Deserialize<'de> for AggResultCollection {
                         }
                         KeyType::Filter(name) => {
                             let agg: Filtered = map.next_value()?;
+                            results.data.insert(name, agg.into());
+                        }
+                        KeyType::Cardinality(name) => {
+                            let agg: Cardinality = map.next_value()?;
                             results.data.insert(name, agg.into());
                         }
                         KeyType::Skip => (),

@@ -2,6 +2,7 @@ use super::*;
 use serde::Serialize;
 
 mod builder_trait;
+mod cardinality_aggregation;
 mod collection;
 mod filter_aggregation;
 mod name;
@@ -9,6 +10,7 @@ mod stats_aggregation;
 mod terms_aggregation;
 
 pub use builder_trait::*;
+pub use cardinality_aggregation::*;
 pub use collection::*;
 pub use filter_aggregation::*;
 pub use name::*;
@@ -31,6 +33,9 @@ pub enum Aggregation {
     /// A single bucket aggregation that narrows the
     /// set of documents to those that match a query
     Filter(FilterAggregation),
+
+    /// A count of unique values for a field.
+    Cardinality(CardinalityAggregation),
 }
 
 impl Serialize for Aggregation {
@@ -42,6 +47,7 @@ impl Serialize for Aggregation {
             Self::Terms(agg) => agg.serialize(serializer),
             Self::Stats(agg) => agg.serialize(serializer),
             Self::Filter(agg) => agg.serialize(serializer),
+            Self::Cardinality(agg) => agg.serialize(serializer),
         }
     }
 }
@@ -60,4 +66,5 @@ mod private {
     impl SealedAgg for TermsAggregation {}
     impl SealedAgg for StatsAggregation {}
     impl SealedAgg for FilterAggregation {}
+    impl SealedAgg for CardinalityAggregation {}
 }

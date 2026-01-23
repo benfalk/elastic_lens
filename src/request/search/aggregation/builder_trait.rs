@@ -1,10 +1,12 @@
 use super::*;
 
+mod cardinality_builder;
 mod filter_agg_builder;
 mod stats_builder;
 mod sub_agg_builder_trait;
 mod terms_builder;
 
+pub use cardinality_builder::*;
 pub use filter_agg_builder::*;
 pub use stats_builder::*;
 pub use sub_agg_builder_trait::*;
@@ -96,6 +98,17 @@ impl<'a, B: AggregationBuilder> AggBuilderWithField<'a, B> {
             field: self.field,
             missing_value: None,
             builder: self.builder,
+        }
+    }
+
+    /// Counts the nunber of unique values for the given field.
+    pub fn count_cardinality(self) -> AggCardinalityBuilder<'a, B> {
+        AggCardinalityBuilder {
+            name: self.name,
+            field: self.field,
+            precision_threshold: None,
+            builder: self.builder,
+            missing_value: None,
         }
     }
 }

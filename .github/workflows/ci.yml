@@ -141,3 +141,5 @@ jobs:
         run: cargo run --features=${{matrix.feature}} --example scroll_search
       - name: 'Example: collapse_by'
         run: cargo run --features=${{matrix.feature}} --example collapse_by
+      - name: 'Example: cardinality_agg'
+        run: cargo run --features=${{matrix.feature}} --example cardinality_agg

@@ -1,9 +1,11 @@
 use super::*;
+mod cardinality_result;
 mod collection;
 mod filter_result;
 mod stats_result;
 mod terms_result;
 
+pub use cardinality_result::*;
 pub use collection::*;
 pub use filter_result::*;
 pub use stats_result::*;
@@ -24,6 +26,9 @@ pub enum AggResult {
 
     /// Results for a filtered aggregation
     Filtered(Filtered),
+
+    /// Results for a cardinality aggregation
+    Cardinality(Cardinality),
 }
 
 impl AggResult {
@@ -33,6 +38,7 @@ impl AggResult {
             Self::StringTerms(agg) => agg.str_identifier(),
             Self::Stats(agg) => agg.str_identifier(),
             Self::Filtered(agg) => agg.str_identifier(),
+            Self::Cardinality(agg) => agg.str_identifier(),
         }
     }
 
@@ -90,4 +96,5 @@ mod private {
     impl SealedAggResultData for StringTerms {}
     impl SealedAggResultData for Stats {}
     impl SealedAggResultData for Filtered {}
+    impl SealedAggResultData for Cardinality {}
 }

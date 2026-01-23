@@ -43,5 +43,5 @@ pub mod prelude {
         SortBuilderTrait, SubAggregationBuilder,
     };
     pub use crate::request::MultiSearch;
-    pub use crate::response::{Filtered, NumericTerms, Stats, StringTerms};
+    pub use crate::response::{Cardinality, Filtered, NumericTerms, Stats, StringTerms};
 }

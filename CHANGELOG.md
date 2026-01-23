@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## `0.8.0` - 2026-01-21
+
+### Added
+
+- Support for cardinality aggregations has been added.  You can now
+  compute the cardinality of a field in your dataset.  In layman's terms
+  this means you can get the count of unique values for a given field.
+
 ## [0.1.8] - 2023-01-24
 
 ### Added
