@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## `0.9.0` - 2026-03-06
+
+### Added
+
+- Support for script filtering has been added.  You can now filter
+  your searches with custom scripts that can evaluate complex conditions
+  on your data.  This can be a very costly action so take care when using
+  this feature.
+
 ## `0.8.0` - 2026-01-21
 
 ### Added

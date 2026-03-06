@@ -143,3 +143,5 @@ jobs:
         run: cargo run --features=${{matrix.feature}} --example collapse_by
       - name: 'Example: cardinality_agg'
         run: cargo run --features=${{matrix.feature}} --example cardinality_agg
+      - name: 'Example: script_filter'
+        run: cargo run --features=${{matrix.feature}} --example script_filter

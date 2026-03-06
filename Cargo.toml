@@ -1,6 +1,6 @@
 [package]
 name = "elastic_lens"
-version = "0.8.0"
+version = "0.9.0"
 edition = "2021"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 description = "An opinionated framework to work with Elasticsearch."
@@ -79,6 +79,10 @@ path = "examples/collapse_by.rs"
 [[example]]
 name = "cardinality_agg"
 path = "examples/cardinality_agg.rs"
+
+[[example]]
+name = "script_filter"
+path = "examples/script_filter.rs"
 
 # To avoid repeating the same model over and
 # over between examples this serves as a shared

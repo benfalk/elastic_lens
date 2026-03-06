@@ -31,6 +31,12 @@ pub fn by_script<S: Into<Cow<'static, str>>>(script: S) -> ScriptSortBuilder {
     ScriptSortBuilder::new(script)
 }
 
+/// Allows for dynamic script filtering of documents.  This is a
+/// powerful but expensive way to filter, so use with care.
+pub fn script_filter<S: Into<Cow<'static, str>>>(script: S) -> ScriptFilterBuilder {
+    ScriptFilterBuilder::new(script)
+}
+
 /// Trait used to provide self-sort construction
 pub trait SortBuilderTrait {
     /// mutable reference to sorts you want to build on

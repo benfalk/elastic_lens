@@ -25,7 +25,7 @@ In your `Cargo.toml` file:
 # You must pick one of the currently two supported adapters
 # - "official_es7"
 # - "official_es8"
-elastic_lens = { version = "0.8.0", features = ["official_es7"] }
+elastic_lens = { version = "0.9.0", features = ["official_es7"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 ```
@@ -310,6 +310,38 @@ pub async fn less_than_20_report() -> Result<Filtered, Error> {
     // as the type since it doesn't matter
     let mut results = client.search::<()>(&search).await?;
     Ok(results.aggs_mut().take::<Filtered>("under-twenty")?)
+}
+```
+
+### Script Filter
+
+```rust
+mod inventory_item;
+
+use elastic_lens::prelude::*;
+use elastic_lens::Error;
+use inventory_item::*;
+
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    let client = Client::default_builder()
+        .host("http://localhost:9200")
+        .index("inventory")
+        .build()?;
+
+    let mut search = Search::default();
+
+    let not_even_by_a_dollar =
+        script_filter("doc['cost'].value % params.divisor != 0")
+          .with_params([("divisor", 100)]);
+
+    search.with(not_even_by_a_dollar);
+    let mut results = client.search::<InventoryItem>(&search).await?;
+    let docs = results.docs_take();
+    assert!(!docs.is_empty());
+    assert_eq!(docs.len(), 1);
+    assert_eq!(docs.first().unwrap().cost, 120);
+    Ok(())
 }
 ```
 
