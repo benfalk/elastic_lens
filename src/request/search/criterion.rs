@@ -9,6 +9,7 @@ mod geo_distance_filter;
 mod nested;
 mod not_all;
 mod range_filter;
+mod script_filter;
 mod term_filter;
 
 pub use all_match::*;
@@ -19,6 +20,7 @@ pub use geo_distance_filter::*;
 pub use nested::*;
 pub use not_all::*;
 pub use range_filter::*;
+pub use script_filter::*;
 pub use term_filter::*;
 
 /// Conditions for a Search
@@ -55,6 +57,10 @@ pub enum Criterion {
 
     /// sub-query designed to filter nested structures
     Nested(NestedFilter),
+
+    /// Allows for dynamic script filtering of documents.  This is a
+    /// powerful but expensive way to filter, so use with care.
+    ScriptFilter(ScriptFilter),
 }
 
 impl Criterion {
@@ -83,6 +89,7 @@ impl Serialize for Criterion {
             Self::NotAll(filters) => filters.serialize(serializer),
             Self::AllMatch(filters) => filters.serialize(serializer),
             Self::Nested(filters) => filters.serialize(serializer),
+            Self::ScriptFilter(filter) => filter.serialize(serializer),
         }
     }
 }
@@ -106,4 +113,5 @@ mod private {
     impl SealedCriterion for AnyMatch {}
     impl SealedCriterion for NotAll {}
     impl SealedCriterion for AllMatch {}
+    impl SealedCriterion for ScriptFilter {}
 }
