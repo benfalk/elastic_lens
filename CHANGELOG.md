@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 - 2026-06-09
+
+### Added
+
+- Aggregation results can now be serialized.  This allows consumers to
+  easily store this information to be used later without needing an
+  intermediate structure to do the mapping.
+
 ## `0.9.0` - 2026-03-06
 
 ### Added

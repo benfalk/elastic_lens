@@ -1,4 +1,6 @@
 use super::*;
+use serde::Serialize;
+
 mod cardinality_result;
 mod collection;
 mod filter_result;
@@ -31,7 +33,32 @@ pub enum AggResult {
     Cardinality(Cardinality),
 }
 
+impl Serialize for AggResult {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            Self::StringTerms(agg) => agg.serialize(serializer),
+            Self::NumericTerms(agg) => agg.serialize(serializer),
+            Self::Stats(agg) => agg.serialize(serializer),
+            Self::Filtered(agg) => agg.serialize(serializer),
+            Self::Cardinality(agg) => agg.serialize(serializer),
+        }
+    }
+}
+
 impl AggResult {
+    pub(super) fn es_key(&self) -> &'static str {
+        match self {
+            Self::StringTerms(_) => StringTerms::ES_KEY,
+            Self::NumericTerms(_) => NumericTerms::ES_KEY,
+            Self::Stats(_) => Stats::ES_KEY,
+            Self::Filtered(_) => Filtered::ES_KEY,
+            Self::Cardinality(_) => Cardinality::ES_KEY,
+        }
+    }
+
     pub(super) fn str_identifier(&self) -> &'static str {
         match self {
             Self::NumericTerms(agg) => agg.str_identifier(),

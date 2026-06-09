@@ -1,9 +1,9 @@
 use super::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Thes are numerical stats collected for a numeric field
 /// or calculation
-#[derive(Debug, Clone, Deserialize, Copy, Default)]
+#[derive(Debug, Clone, Deserialize, Copy, Default, Serialize)]
 pub struct Stats {
     /// the number of items counted for stats
     pub count: usize,

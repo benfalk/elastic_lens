@@ -1,5 +1,5 @@
 use super::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// When the terms are strings
 pub type StringTerms = TermResults<String>;
@@ -8,7 +8,7 @@ pub type StringTerms = TermResults<String>;
 pub type NumericTerms = TermResults<i64>;
 
 /// Term Aggregation Results from Elasticsearch
-#[derive(Debug, Clone, Deserialize, Default)]
+#[derive(Debug, Clone, Deserialize, Default, Serialize)]
 pub struct TermResults<T> {
     /// unique term counts, this is not guaranteed
     /// to be all values, it will only be the top
@@ -33,7 +33,7 @@ pub struct TermResults<T> {
 
 /// Count for a particular term and any
 /// sub-aggregations it may have
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TermCount<T> {
     /// counted term in all documents
     #[serde(rename = "key")]
