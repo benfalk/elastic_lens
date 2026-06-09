@@ -1,8 +1,8 @@
 use super::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Results for a cardinality aggregation
-#[derive(Debug, Clone, Deserialize, Default, Copy)]
+#[derive(Debug, Clone, Deserialize, Default, Copy, Serialize)]
 pub struct Cardinality {
     /// the cardinality count value
     #[serde(rename = "value")]

@@ -1,8 +1,8 @@
 use super::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Results for a filtered aggregation
-#[derive(Debug, Clone, Deserialize, Default)]
+#[derive(Debug, Clone, Deserialize, Default, Serialize)]
 pub struct Filtered {
     /// number of documents that matched the filter
     #[serde(rename = "doc_count")]

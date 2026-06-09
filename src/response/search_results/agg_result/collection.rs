@@ -1,5 +1,7 @@
 use super::*;
 use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
+use serde::ser::SerializeMap;
+use serde::Serialize;
 use std::collections::BTreeMap;
 
 /// Errors that can happen when trying to work with aggregations
@@ -104,6 +106,20 @@ impl AggResultCollection {
                 self.data.insert(key, agg);
             }
         }
+    }
+}
+
+impl Serialize for AggResultCollection {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(self.data.len()))?;
+        for (name, agg) in &self.data {
+            let key = format!("{}#{}", agg.es_key(), name);
+            map.serialize_entry(&key, agg)?;
+        }
+        map.end()
     }
 }
 
